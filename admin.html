@@ -34,6 +34,7 @@ h2,h3{margin:0 0 10px}
 .tl{border-left:3px solid var(--line);padding:2px 0 2px 12px;margin:0 0 10px}
 .tl.customer{border-color:var(--tag)}
 .tl small{color:var(--mute)}
+fieldset{border:1.5px solid var(--line);border-radius:8px;margin:0;padding:10px}
 @media (max-width:820px){main{grid-template-columns:1fr}}
 </style>
 </head>
@@ -51,6 +52,7 @@ h2,h3{margin:0 0 10px}
  <main>
   <div>
    <button id="new" style="width:100%;margin-bottom:12px">New booking</button>
+   <button id="par" class="alt" style="width:100%;margin-bottom:12px">Parcel requests</button>
    <select id="flt" style="margin-bottom:12px"></select>
    <div id="list"></div>
   </div>
@@ -66,6 +68,16 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const dt=x=>x?new Date(x).toLocaleString():'-';
 const STATUS=['requested','confirmed','picked_up','stored','ready','released','closed'];
 const SERVICE=['Store at a branch','Hotel pick-up','Airport delivery'];
+const KR=[['rn','Contact name'],['ph','Phone (+82)'],['zip','Postal code (우편번호)'],['road','Road address in Korean (도로명주소)',1],['det','Building, floor, unit (상세주소)',1],['rom','Romanized address for couriers',1]];
+const TH=[['rn','Contact name'],['ph','Phone (+66)'],['no','House no. (บ้านเลขที่)'],['moo','Moo (หมู่)'],['soi','Soi (ซอย)'],['road','Road (ถนน)'],['sub','Subdistrict (ตำบล/แขวง)'],['dis','District (อำเภอ/เขต)'],['prov','Province (จังหวัด)'],['zip','Postal code (รหัสไปรษณีย์)'],['rom','Romanized address',1]];
+const fields=(p,c,L)=>`<div class="grid full" data-a="${p}-${c}" hidden>${L.map(([k,t,w])=>`<label class="${w?'full':''}">${t}<input name="${p}_${c}_${k}"></label>`).join('')}</div>`;
+const addrForm=(p,t)=>`<fieldset class="full"><legend>${t}</legend><label>Country<select name="${p}_c" data-ac="${p}"><option value="">None</option><option value="KR">Korea (한국)</option><option value="TH">Thailand (ไทย)</option></select></label>${fields(p,'KR',KR)}${fields(p,'TH',TH)}</fieldset>`;
+const readAddr=(d,p)=>{const c=d[p+'_c'];if(!c)return null;const f=k=>d[`${p}_${c}_${k}`]||null;
+ return c==='KR'?{country:'KR',recipient_name:f('rn'),phone:f('ph'),postal_code:f('zip'),kr_road:f('road'),kr_detail:f('det'),kr_roman:f('rom')}
+ :{country:'TH',recipient_name:f('rn'),phone:f('ph'),postal_code:f('zip'),th_house_no:f('no'),th_moo:f('moo'),th_soi:f('soi'),th_road:f('road'),th_subdistrict:f('sub'),th_district:f('dis'),th_province:f('prov'),th_roman:f('rom')}};
+const fmtA=a=>!a?'-':esc(a.recipient_name||'')+(a.phone?' · '+esc(a.phone):'')+'<br>'+(a.country==='KR'
+ ?esc([a.postal_code,a.kr_road,a.kr_detail].filter(Boolean).join(' '))+(a.kr_roman?'<br><small>'+esc(a.kr_roman)+'</small>':'')
+ :esc([a.th_house_no,a.th_moo&&'หมู่ '+a.th_moo,a.th_soi&&'ซอย '+a.th_soi,a.th_road&&'ถนน '+a.th_road,a.th_subdistrict,a.th_district,a.th_province,a.postal_code].filter(Boolean).join(' '))+(a.th_roman?'<br><small>'+esc(a.th_roman)+'</small>':''));
 let me=null,cur=null;
 
 const ok=r=>{if(r.error){alert(r.error.message);throw r.error}return r.data};
@@ -105,24 +117,31 @@ $('#new').onclick=()=>{
  <span></span>
  <label>Drop-off time<input type="datetime-local" name="drop_at"></label>
  <label>Pick-up time<input type="datetime-local" name="pickup_at"></label>
+ <label>Customer language<select name="language"><option value="th">ไทย</option><option value="ko">한국어</option><option value="en">English</option></select></label>
+ ${addrForm('pk','Pick-up address')}${addrForm('dl','Delivery address')}
+ <label class="full"><span><input type="checkbox" name="consent" style="width:auto"> Customer accepted the terms of service and privacy policy (v1)</span></label>
  <button class="full">Create booking</button></form>`;
 };
 
 async function openBooking(id){
- const b=ok(await sb.from('bookings').select('*,customers(*),bags(*),timeline(*,staff(name))').eq('id',id).single());
+ const b=ok(await sb.from('bookings').select('*,customers(*),bags(*),timeline(*,staff(name)),pk:addresses!bookings_pickup_address_id_fkey(*),dl:addresses!bookings_delivery_address_id_fkey(*)').eq('id',id).single());
  cur=b;loadList();
  const tl=[...b.timeline].sort((x,y)=>x.id-y.id);
  $('#detail').innerHTML=`
  <div class="card"><h2>${esc(b.code)} <span class="pill">${esc(b.status)}</span></h2>
-  <p>${esc(b.customers?.name)} · ${esc(b.customers?.contact)}<br>${esc(b.service)}<br>Drop-off: ${dt(b.drop_at)} · Pick-up: ${dt(b.pickup_at)}</p>
+  <p>${esc(b.customers?.name)} · ${esc(b.customers?.contact)}<br>${esc(b.service)}<br>Drop-off: ${dt(b.drop_at)} · Pick-up: ${dt(b.pickup_at)}</p><p><b>Pick-up address</b><br>${fmtA(b.pk)}</p><p><b>Delivery address</b><br>${fmtA(b.dl)}</p><p><small>Language: ${esc(b.language)} · Terms accepted: ${b.consent_at?dt(b.consent_at)+' ('+esc(b.consent_version)+')':'not recorded'}</small></p>
   <select id="st">${STATUS.map(s=>`<option ${s===b.status?'selected':''}>${s}</option>`).join('')}</select></div>
 
  <div class="card"><h3>Bags (${b.bags.length})</h3>
-  ${b.bags.map(g=>`<div class="bag"><div><b>${esc(g.tag)}</b> ${esc(g.size)} · slot ${esc(g.slot)||'-'}<br><small>${esc(g.condition_note)}</small>${g.released_at?'<br><small>Released '+dt(g.released_at)+'</small>':''}</div>
+  ${b.bags.map(g=>`<div class="bag"><div><b>${esc(g.tag)}</b> ${esc(g.kind)} · ${esc(g.size)} · ${g.weight_kg??'-'} kg · declared ₩${g.declared_value_krw??'-'} · slot ${esc(g.slot)||'-'}<br>${esc(g.contents)}<br><small>${esc(g.condition_note)}</small>${g.released_at?'<br><small>Released '+dt(g.released_at)+'</small>':''}</div>
    <div>${g.photo_path?`<button class="alt" data-photo="${esc(g.photo_path)}">Photo</button> `:''}${g.released_at?'':`<button class="alt" data-rel="${g.id}" data-tag="${esc(g.tag)}">Release</button>`}</div></div>`).join('')}
   <form id="bf" class="grid" style="margin-top:12px">
    <label>Size<select name="size"><option>Small</option><option>Medium</option><option>Large</option><option>Extra large</option></select></label>
    <label>Storage slot<input name="slot" placeholder="A-3"></label>
+   <label>Type<select name="kind"><option value="bag">Bag</option><option value="parcel">Parcel</option></select></label>
+   <label>Weight (kg)<input type="number" name="weight_kg" step="0.1" min="0"></label>
+   <label>Declared value (KRW)<input type="number" name="declared_value_krw" min="0"></label>
+   <label>Contents<input name="contents"></label>
    <label class="full">Condition notes<input name="condition_note" placeholder="Scratch on left side, wheel loose..."></label>
    <label class="full">Intake photo<input type="file" name="photo" accept="image/*" capture="environment"></label>
    <button class="full">Check in bag</button></form></div>
@@ -142,6 +161,7 @@ const log=(booking_id,kind,body,visibility='internal')=>sb.from('timeline').inse
 document.addEventListener('click',async e=>{
  const t=e.target.closest('button');if(!t)return;
  if(t.dataset.open)openBooking(t.dataset.open);
+ if(t.dataset.pr)showPR(t.dataset.pr);
  if(t.dataset.photo){const r=await sb.storage.from('bag-photos').createSignedUrl(t.dataset.photo,300);if(r.data)window.open(r.data.signedUrl,'_blank');else alert(r.error.message)}
  if(t.dataset.rel&&confirm('Release bag '+t.dataset.tag+' to the customer?')){
   ok(await sb.from('bags').update({released_at:new Date().toISOString()}).eq('id',t.dataset.rel));
@@ -161,7 +181,9 @@ document.addEventListener('submit',async e=>{
   e.preventDefault();
   const c=ok(await sb.from('customers').insert({name:d.name,contact:d.contact}).select().single());
   const code='ED-'+Math.random().toString(36).slice(2,7).toUpperCase();
-  const b=ok(await sb.from('bookings').insert({code,customer_id:c.id,service:d.service,drop_at:d.drop_at||null,pickup_at:d.pickup_at||null}).select().single());
+  const ids={};
+  for(const p of['pk','dl']){const a=readAddr(d,p);ids[p]=a?ok(await sb.from('addresses').insert(a).select('id').single()).id:null}
+  const b=ok(await sb.from('bookings').insert({code,customer_id:c.id,service:d.service,drop_at:d.drop_at||null,pickup_at:d.pickup_at||null,language:d.language,pickup_address_id:ids.pk,delivery_address_id:ids.dl,consent_version:d.consent?'v1':null,consent_at:d.consent?new Date().toISOString():null}).select().single());
   await log(b.id,'status','Booking created');openBooking(b.id);
  }
  if(f.id==='bf'){
@@ -173,7 +195,7 @@ document.addEventListener('submit',async e=>{
    const u=await sb.storage.from('bag-photos').upload(photo_path,file);
    if(u.error){alert(u.error.message);return}
   }
-  ok(await sb.from('bags').insert({booking_id:cur.id,tag,size:d.size,slot:d.slot,condition_note:d.condition_note,photo_path,checked_in_by:me.id}));
+  ok(await sb.from('bags').insert({booking_id:cur.id,tag,size:d.size,slot:d.slot,kind:d.kind,weight_kg:d.weight_kg||null,declared_value_krw:d.declared_value_krw||null,contents:d.contents||null,condition_note:d.condition_note,photo_path,checked_in_by:me.id}));
   await log(cur.id,'status','Bag '+tag+' checked in ('+d.size+')'+(d.condition_note?': '+d.condition_note:''));openBooking(cur.id);
  }
  if(f.id==='tf'){
@@ -181,6 +203,27 @@ document.addEventListener('submit',async e=>{
   await log(cur.id,d.kind,d.body,d.visibility);openBooking(cur.id);
  }
 });
+
+document.addEventListener('change',e=>{
+ const p=e.target.dataset&&e.target.dataset.ac;if(!p)return;
+ document.querySelectorAll(`[data-a^="${p}-"]`).forEach(x=>x.hidden=x.dataset.a!==`${p}-${e.target.value}`);
+});
+
+let PR=[];
+$('#par').onclick=async()=>{
+ PR=ok(await sb.from('parcel_requests').select('*').order('created_at',{ascending:false}).limit(100));
+ $('#detail').innerHTML='<div class="card"><h2>Parcel requests</h2>'+(PR.map(x=>`<button class="item" data-pr="${x.id}"><b>${esc(x.code)}</b> <span class="pill">${esc(x.status)}</span><small>${esc(x.sender.fn)} ${esc(x.sender.ln)} → ${esc(x.recipient.fn)} ${esc(x.recipient.ln)} · ${dt(x.created_at)}</small></button>`).join('')||'<p>None yet.</p>')+'</div>';
+};
+function showPR(id){
+ const x=PR.find(r=>r.id===id),s=x.sender,r=x.recipient,c=x.customs;
+ $('#detail').innerHTML=`<div class="card"><h2>${esc(x.code)} <span class="pill">${esc(x.status)}</span></h2>
+ <p><b>Sender (Korea)</b><br>${esc(s.fn)} ${esc(s.ln)} · ${esc(s.phone)} · ${esc(s.email)}<br>${esc([s.zip,s.prov,s.city,s.street,s.bno,s.place,s.dong,s.ho].filter(Boolean).join(' '))}</p>
+ <p><b>Recipient (Thailand)</b><br>${esc(r.fn)} ${esc(r.ln)} · ${esc(r.phone)} · ${esc(r.email)}<br>${esc(r.addr)}, ${esc(r.prov)} ${esc(r.zip)}</p>
+ <p><b>Customs declaration</b><br>${esc(c.contents)} × ${esc(c.qty)} · ${esc(c.value)} ${esc(c.cur)}</p>
+ <p><small>Customer language: ${esc(x.language)} · Terms ${esc(x.consent_version)} accepted ${dt(x.consent_at)}</small></p>
+ <select id="prst">${['new','contacted','received','shipped','closed'].map(v=>`<option ${v===x.status?'selected':''}>${v}</option>`).join('')}</select></div>`;
+ $('#prst').onchange=async e=>{ok(await sb.from('parcel_requests').update({status:e.target.value}).eq('id',id));$('#par').click()};
+}
 
 boot();
 </script>

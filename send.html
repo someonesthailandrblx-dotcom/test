@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ส่งพัสดุกลับไทย</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;700&family=Sarabun:wght@400;600&family=Noto+Sans+KR:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#13233A;--paper:#EEF3F7;--tag:#FFC53D;--red:#D6403A;--mute:#51627A;--line:#C9D5E0}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.6 Sarabun,"Noto Sans KR",sans-serif}
+h1,h2,legend,.brand{font-family:Prompt,"Noto Sans KR",sans-serif}
+:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+.wrap{max-width:760px;margin:auto;padding:0 20px 60px}
+header{display:flex;justify-content:space-between;align-items:center;padding:18px 0}
+.brand{font-weight:700;font-size:21px;text-decoration:none;color:inherit}
+.lg button{background:none;border:1.5px solid var(--ink);color:var(--ink);padding:2px 12px;font:600 14px Sarabun;cursor:pointer}
+.lg button:first-child{border-radius:999px 0 0 999px}
+.lg button:last-child{border-radius:0 999px 999px 0}
+.lg button+button{border-left:0}
+.lg button.on{background:var(--ink);color:#fff}
+h1{font-size:clamp(28px,5vw,40px);margin:28px 0 6px}
+.note{color:var(--mute);font-size:15px}
+fieldset{border:0;border-left:4px solid var(--tag);background:#fff;border-radius:10px;margin:22px 0;padding:8px 18px 18px}
+legend{font-size:20px;font-weight:700;padding:0 8px;margin-left:-8px}
+.g{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.w{grid-column:1/-1}
+label{display:grid;gap:3px;font-weight:600;font-size:15px}
+input,select,textarea{width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:8px;font:inherit;color:var(--ink);background:#fff}
+.chk{display:flex;gap:10px;align-items:flex-start;font-weight:400}
+.chk input{width:auto;margin-top:6px}
+button.go{background:var(--ink);color:#fff;border:0;border-radius:8px;padding:13px 30px;font:500 17px Prompt,"Noto Sans KR",sans-serif;cursor:pointer;margin-top:12px}
+button.go:disabled{opacity:.5}
+.hp{position:absolute;left:-9999px}
+.ok{background:#fff;border-radius:10px;padding:28px;text-align:center}
+.code{font:700 38px Prompt;background:var(--tag);display:inline-block;padding:4px 22px;border-radius:8px;margin:6px 0}
+@media (max-width:620px){.g{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+ <a class="brand" href="index.html">EASY DROP</a>
+ <div class="lg" id="lg"><button data-l="th">ไทย</button><button data-l="en">EN</button><button data-l="ko">한국어</button></div>
+</header>
+<h1 data-k="title"></h1>
+<p class="note" data-k="note"></p>
+<form id="f"></form>
+
+<script>
+const URL_='https://wmfcpcugyvwhvyfztnwp.supabase.co',KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndtZmNwY3VneXZ3aHZ5Znp0bndwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA5MjcwMTEsImV4cCI6MjEwNjUwMzAxMX0.XCfQj9U-IFhltEWIVDMWXo8Qe4BJgcBk_Sv0rJKXMAw';
+const $=s=>document.querySelector(s);
+const LI={th:0,en:1,ko:2};
+const D={
+ title:['ส่งพัสดุกลับไทย','Send a parcel to Thailand','태국으로 소포 보내기'],
+ note:['กรุณากรอกข้อมูลให้ครบถ้วน ช่องที่มี * ต้องกรอก','Please fill in every field marked *.','* 표시 항목은 모두 입력해 주세요.'],
+ snd:['ผู้ส่ง (ในเกาหลี)','Sender (in Korea)','발송자 (한국)'],
+ rcv:['ผู้รับ (ในไทย)','Recipient (in Thailand)','수취인 (태국)'],
+ cus:['ใบสำแดงสินค้าศุลกากร','Customs declaration','세관신고서'],
+ fn:['ชื่อ','First name','이름'],ln:['นามสกุล','Last name','성'],
+ zip:['รหัสไปรษณีย์ (5 หลัก)','Postal code (5 digits)','우편번호 (5자리)'],
+ prov:['จังหวัด','Province','시·도'],city:['เขต / อำเภอ','City or district','시·군·구'],
+ street:['ชื่อถนน','Street name','도로명'],bno:['บ้านเลขที่','Building number','건물번호'],
+ place:['ชื่อสถานที่','Place name','장소명'],dong:['ตึก (동)','Building (dong)','동'],ho:['เลขห้อง (호)','Room (ho)','호'],
+ phone:['เบอร์ติดต่อ','Phone number','연락처'],email:['อีเมล','Email','이메일'],addr:['ที่อยู่','Address','주소'],
+ contents:['ของที่บรรจุ','Contents','내용품명'],qty:['จำนวน','Quantity','개수'],value:['มูลค่ารวม','Total value','총 금액'],cur:['สกุลเงิน','Currency','통화'],
+ pick:['-- เลือก --','-- Select --','-- 선택 --'],
+ agree:['ฉันยอมรับ','I accept the',''],terms:['เงื่อนไขการบริการและนโยบายความเป็นส่วนตัว','terms of service and privacy policy','서비스 이용약관 및 개인정보 처리방침'],agree2:['','','에 동의합니다'],
+ submit:['ส่งข้อมูลการจัดส่ง','Submit shipping details','배송 정보 제출'],
+ safe:['ข้อมูลของคุณจะถูกบันทึกอย่างปลอดภัย และเจ้าหน้าที่เท่านั้นที่เห็นได้','Your details are stored securely and only our staff can see them.','입력하신 정보는 안전하게 저장되며 담당 직원만 열람할 수 있습니다.'],
+ ok:['ส่งข้อมูลเรียบร้อยแล้ว','Submitted','제출이 완료되었습니다'],
+ okn:['กรุณาเก็บหมายเลขคำขอนี้ไว้ ทีมงานจะติดต่อกลับทางเบอร์หรืออีเมลที่ให้ไว้','Please keep this request number. We will contact you by the phone or email you gave.','접수번호를 보관해 주세요. 입력하신 연락처나 이메일로 연락드리겠습니다.'],
+ err:['ส่งไม่สำเร็จ กรุณาลองใหม่อีกครั้ง','Could not submit. Please try again.','제출하지 못했습니다. 다시 시도해 주세요.'],
+ home:['กลับหน้าหลัก','Back to home','홈으로']
+};
+const KRP=[['서울','Seoul'],['부산','Busan'],['대구','Daegu'],['인천','Incheon'],['광주','Gwangju'],['대전','Daejeon'],['울산','Ulsan'],['세종','Sejong'],['경기도','Gyeonggi-do'],['강원도','Gangwon-do'],['충청북도','Chungcheongbuk-do'],['충청남도','Chungcheongnam-do'],['전라북도','Jeollabuk-do'],['전라남도','Jeollanam-do'],['경상북도','Gyeongsangbuk-do'],['경상남도','Gyeongsangnam-do'],['제주','Jeju']];
+const THP='กรุงเทพมหานคร|Bangkok;เชียงใหม่|Chiang Mai;เชียงราย|Chiang Rai;ลำปาง|Lampang;ลำพูน|Lamphun;แม่ฮ่องสอน|Mae Hong Son;น่าน|Nan;พะเยา|Phayao;แพร่|Phrae;อุตรดิตถ์|Uttaradit;กาฬสินธุ์|Kalasin;ขอนแก่น|Khon Kaen;ชัยภูมิ|Chaiyaphum;นครพนม|Nakhon Phanom;นครราชสีมา|Nakhon Ratchasima;บึงกาฬ|Bueng Kan;บุรีรัมย์|Buriram;มหาสารคาม|Maha Sarakham;มุกดาหาร|Mukdahan;ยโสธร|Yasothon;ร้อยเอ็ด|Roi Et;เลย|Loei;สกลนคร|Sakon Nakhon;สุรินทร์|Surin;ศรีสะเกษ|Sisaket;หนองคาย|Nong Khai;หนองบัวลำภู|Nong Bua Lamphu;อุดรธานี|Udon Thani;อุบลราชธานี|Ubon Ratchathani;อำนาจเจริญ|Amnat Charoen;กำแพงเพชร|Kamphaeng Phet;ชัยนาท|Chai Nat;นครนายก|Nakhon Nayok;นครปฐม|Nakhon Pathom;นครสวรรค์|Nakhon Sawan;นนทบุรี|Nonthaburi;ปทุมธานี|Pathum Thani;พระนครศรีอยุธยา|Phra Nakhon Si Ayutthaya;พิจิตร|Phichit;พิษณุโลก|Phitsanulok;เพชรบูรณ์|Phetchabun;ลพบุรี|Lopburi;สมุทรปราการ|Samut Prakan;สมุทรสงคราม|Samut Songkhram;สมุทรสาคร|Samut Sakhon;สิงห์บุรี|Sing Buri;สุโขทัย|Sukhothai;สุพรรณบุรี|Suphan Buri;สระบุรี|Saraburi;อ่างทอง|Ang Thong;อุทัยธานี|Uthai Thani;จันทบุรี|Chanthaburi;ฉะเชิงเทรา|Chachoengsao;ชลบุรี|Chonburi;ตราด|Trat;ปราจีนบุรี|Prachinburi;ระยอง|Rayong;สระแก้ว|Sa Kaeo;กาญจนบุรี|Kanchanaburi;ตาก|Tak;ประจวบคีรีขันธ์|Prachuap Khiri Khan;เพชรบุรี|Phetchaburi;ราชบุรี|Ratchaburi;กระบี่|Krabi;ชุมพร|Chumphon;ตรัง|Trang;นครศรีธรรมราช|Nakhon Si Thammarat;นราธิวาส|Narathiwat;ปัตตานี|Pattani;พังงา|Phang Nga;พัทลุง|Phatthalung;ภูเก็ต|Phuket;ระนอง|Ranong;สตูล|Satun;สงขลา|Songkhla;สุราษฎร์ธานี|Surat Thani;ยะลา|Yala'.split(';').map(x=>x.split('|'));
+
+const field=(p,k,o={})=>`<label class="${o.w?'w':''}"><span><span data-k="${k}"></span>${o.o?'':' *'}</span>${o.t
+ ?`<textarea name="${p}_${k}" rows="3" ${o.o?'':'required'}></textarea>`
+ :`<input name="${p}_${k}" ${o.type?`type="${o.type}"`:''} ${o.a||''} ${o.o?'':'required'}>`}</label>`;
+const sel=(p,k,list)=>`<label><span><span data-k="${k}"></span> *</span><select name="${p}_${k}" required><option value="" data-k="pick"></option>${list.map(([a,b])=>`<option value="${b}">${a} (${b})</option>`).join('')}</select></label>`;
+const zip={a:'pattern="[0-9]{5}" inputmode="numeric" maxlength="5"'};
+
+$('#f').innerHTML=`
+<fieldset><legend data-k="snd"></legend><div class="g">
+${field('s','fn')}${field('s','ln')}${field('s','zip',zip)}${sel('s','prov',KRP)}${field('s','city')}${field('s','street',{o:1})}${field('s','bno')}${field('s','place',{o:1})}${field('s','dong',{o:1})}${field('s','ho',{o:1})}${field('s','phone',{type:'tel'})}${field('s','email',{type:'email'})}
+</div></fieldset>
+<fieldset><legend data-k="rcv"></legend><div class="g">
+${field('r','fn')}${field('r','ln')}${field('r','zip',zip)}${sel('r','prov',THP)}${field('r','addr',{t:1,w:1})}${field('r','phone',{type:'tel'})}${field('r','email',{type:'email'})}
+</div></fieldset>
+<fieldset><legend data-k="cus"></legend><div class="g">
+${field('c','contents',{w:1})}${field('c','qty',{type:'number',a:'min="1" step="1"'})}${field('c','value',{type:'number',a:'min="0" step="any"'})}
+<label><span data-k="cur"></span><select name="c_cur"><option>USD</option><option>KRW</option><option>THB</option></select></label>
+</div></fieldset>
+<label class="chk"><input type="checkbox" name="consent" required><span><span data-k="agree"></span> <a href="ko.html#terms" target="_blank" rel="noopener" data-k="terms"></a><span data-k="agree2"></span></span></label>
+<input name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+<button class="go" data-k="submit"></button>
+<p class="note" data-k="safe"></p>`;
+
+let LANG='th';
+function setLang(l){
+ LANG=l;document.documentElement.lang=l;
+ document.querySelectorAll('[data-k]').forEach(e=>e.textContent=D[e.dataset.k][LI[l]]);
+ document.title=D.title[LI[l]];
+ document.querySelectorAll('#lg button').forEach(b=>b.classList.toggle('on',b.dataset.l===l));
+ try{localStorage.setItem('lang',l)}catch(_){}
+}
+document.querySelectorAll('#lg button').forEach(b=>b.onclick=()=>setLang(b.dataset.l));
+let sv=null;try{sv=localStorage.getItem('lang')}catch(_){}
+setLang(LI[sv]!==undefined?sv:'th');
+
+const pick=(d,p)=>Object.fromEntries(Object.entries(d).filter(([k])=>k.startsWith(p+'_')).map(([k,v])=>[k.slice(2),v]));
+function done(code){
+ $('#f').innerHTML=`<div class="ok"><h2 data-k="ok"></h2><div class="code">${code}</div><p data-k="okn"></p><p><a href="index.html" data-k="home"></a></p></div>`;
+ setLang(LANG);
+}
+$('#f').onsubmit=async e=>{
+ e.preventDefault();
+ const d=Object.fromEntries(new FormData(e.target));
+ if(d.website)return done('PR-000000');
+ const code='PR-'+Array.from(crypto.getRandomValues(new Uint8Array(6)),b=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[b%32]).join('');
+ const btn=e.target.querySelector('.go');btn.disabled=true;
+ try{
+  const r=await fetch(URL_+'/rest/v1/parcel_requests',{method:'POST',
+   headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
+   body:JSON.stringify({code,language:LANG,sender:pick(d,'s'),recipient:pick(d,'r'),customs:pick(d,'c'),consent_version:'v1',consent_at:new Date().toISOString()})});
+  if(!r.ok)throw new Error(r.status);
+  done(code);
+ }catch(_){alert(D.err[LI[LANG]]);btn.disabled=false}
+};
+</script>
+</div>
+</body>
+</html>
