@@ -24,7 +24,8 @@ header{display:flex;justify-content:space-between;align-items:center;padding:18p
 h1{font-size:clamp(28px,5vw,40px);margin:28px 0 6px}
 .note{color:var(--mute);font-size:15px}
 fieldset{border:0;border-left:4px solid var(--tag);background:#fff;border-radius:10px;margin:22px 0;padding:8px 18px 18px}
-legend{font-size:20px;font-weight:700;padding:0 8px;margin-left:-8px}
+legend{float:left;width:100%;font-size:20px;font-weight:700;padding:0;margin:0 0 12px}
+legend+.g{clear:both}
 .g{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .w{grid-column:1/-1}
 label{display:grid;gap:3px;font-weight:600;font-size:15px}
