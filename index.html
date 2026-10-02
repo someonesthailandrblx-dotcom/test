@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EASY DROP – บริการรับฝากสัมภาระในเกาหลี</title>
+<meta name="description" content="รับฝากสัมภาระปลอดภัยในเกาหลี พร้อมบริการรับถึงที่พักและส่งสนามบิน ราคาประหยัด">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;700&family=Sarabun:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#13233A;--paper:#EEF3F7;--tag:#FFC53D;--red:#D6403A;--mute:#51627A;--line:#C9D5E0}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.7 Sarabun,sans-serif}
+h1,h2,h3,.brand,.btn{font-family:Prompt,Sarabun,sans-serif}
+h1,h2,h3{line-height:1.3;margin:0}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+.wrap{max-width:1040px;margin:auto;padding:0 20px}
+header{display:flex;justify-content:space-between;align-items:center;padding:18px 0}
+.brand{font-weight:700;font-size:21px;text-decoration:none}
+nav{display:flex;gap:22px;align-items:center;font-size:15px}
+nav a{text-decoration:none}
+.lang{border:1.5px solid var(--ink);background:none;border-radius:999px;padding:2px 14px;font:600 14px Sarabun;cursor:pointer;color:var(--ink)}
+.btn{display:inline-block;background:var(--ink);color:#fff;padding:12px 26px;border-radius:8px;font-weight:500;font-size:16px;text-decoration:none;border:1.5px solid var(--ink);cursor:pointer}
+.btn.alt{background:none;color:var(--ink)}
+.hero{display:grid;grid-template-columns:1.2fr .8fr;gap:40px;align-items:center;padding:48px 0 72px}
+h1{font-size:clamp(34px,5.4vw,56px);font-weight:700}
+.hero p{max-width:32em;color:var(--mute);font-size:19px}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+.tagwrap{justify-self:center;transform-origin:50% 0;animation:swing 1.8s ease-out 1}
+.string{width:2px;height:44px;background:var(--ink);margin:0 auto}
+.tag{width:264px;background:var(--tag);border-radius:10px 10px 18px 18px;padding:46px 24px 24px;position:relative}
+.tag:before{content:"";position:absolute;top:14px;left:50%;width:18px;height:18px;margin-left:-9px;border-radius:50%;background:var(--paper);box-shadow:inset 0 0 0 2px var(--ink)}
+.tag b{font:700 15px Prompt}
+.tag .code{font:700 40px/1.1 Prompt;margin:6px 0 14px}
+.tag dl{margin:0;border-top:2px dashed var(--ink);padding-top:12px;font-size:15px;line-height:1.6}
+.tag dt{color:#5b4300;font-size:13px}
+.tag dd{margin:0 0 8px;font-weight:600}
+@keyframes swing{0%{rotate:-7deg}30%{rotate:5deg}60%{rotate:-2deg}100%{rotate:0deg}}
+@media (prefers-reduced-motion:reduce){.tagwrap{animation:none}html{scroll-behavior:auto}}
+section{padding:64px 0;border-top:1px solid var(--line)}
+h2{font-size:30px;margin-bottom:8px}
+.lead{color:var(--mute);margin:0 0 32px;max-width:36em}
+.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+.steps li{border-left:4px solid var(--tag);padding-left:18px}
+.steps h3{font-size:20px}
+.steps p{margin:4px 0 0;color:var(--mute)}
+.row{display:grid;grid-template-columns:1fr auto;gap:16px;padding:18px 0;border-bottom:1px solid var(--line);align-items:baseline}
+.row:first-of-type{border-top:1px solid var(--line)}
+.row h3{font-size:19px}
+.row p{margin:0;color:var(--mute);font-size:15px}
+.price{font:700 22px Prompt;white-space:nowrap}
+.note{font-size:14px;color:var(--mute);margin-top:14px}
+.branches{display:grid;grid-template-columns:repeat(2,1fr);gap:28px}
+.branches h3{font-size:19px}
+.branches p{margin:2px 0;color:var(--mute)}
+form{display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:680px}
+label{display:grid;gap:4px;font-weight:600;font-size:15px}
+input,select{width:100%;padding:11px 12px;border:1.5px solid var(--line);border-radius:8px;font:inherit;background:#fff;color:var(--ink)}
+form .btn{grid-column:1/-1;justify-self:start}
+details{border-bottom:1px solid var(--line);padding:14px 0;max-width:720px}
+details:first-of-type{border-top:1px solid var(--line)}
+summary{cursor:pointer;font:500 18px Prompt}
+details p{margin:8px 0 0;color:var(--mute)}
+footer{border-top:1px solid var(--line);padding:28px 0 40px;font-size:15px;color:var(--mute)}
+@media (max-width:760px){
+ nav a{display:none}
+ .hero,.steps,.branches,form{grid-template-columns:1fr}
+ .hero{padding-top:24px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+ <a class="brand" href="#">EASY DROP</a>
+ <nav>
+  <a href="#how" data-en="How it works">ขั้นตอน</a>
+  <a href="#prices" data-en="Prices">ราคา</a>
+  <a href="#branches" data-en="Branches">สาขา</a>
+  <a href="#faq" data-en="FAQ">คำถามที่พบบ่อย</a>
+  <button class="lang" id="lang" type="button" aria-label="Switch language">EN</button>
+ </nav>
+</header>
+
+<main>
+<div class="hero">
+ <div>
+  <h1 data-en="Store your bags in Korea. Travel hands-free.">ฝากกระเป๋าในเกาหลี เที่ยวได้เต็มที่</h1>
+  <p data-en="Safe luggage storage with hotel pickup and airport delivery, at fair prices.">รับฝากสัมภาระปลอดภัย พร้อมบริการรับถึงที่พักและส่งสนามบิน ในราคาประหยัด</p>
+  <div class="cta">
+   <a class="btn" href="#book" data-en="Book now">จองเลย</a>
+   <a class="btn alt" href="#prices" data-en="See prices">ดูราคา</a>
+  </div>
+ </div>
+ <div class="tagwrap" aria-hidden="true">
+  <div class="string"></div>
+  <div class="tag">
+   <b>EASY DROP</b>
+   <div class="code">ED-2310</div>
+   <dl>
+    <dt data-en="Drop-off">ฝาก</dt><dd>10:00</dd>
+    <dt data-en="Pick-up">รับคืน</dt><dd>20:00</dd>
+    <dt data-en="Bags">จำนวน</dt><dd data-en="2 bags">2 ใบ</dd>
+   </dl>
+  </div>
+ </div>
+</div>
+
+<section id="how">
+ <h2 data-en="How it works">ใช้งานง่าย 3 ขั้นตอน</h2>
+ <p class="lead" data-en="From booking to pick-up, you always have a booking code to show.">ตั้งแต่จองจนรับคืน คุณจะมีรหัสการจองไว้แสดงทุกครั้ง</p>
+ <ol class="steps">
+  <li><h3 data-en="Book">จอง</h3><p data-en="Choose the date, time and number of bags.">เลือกวัน เวลา และจำนวนกระเป๋า</p></li>
+  <li><h3 data-en="Hand over">ส่งมอบ</h3><p data-en="Bring bags to a branch, or we collect them from your hotel.">นำกระเป๋ามาที่สาขา หรือให้เราไปรับที่พัก</p></li>
+  <li><h3 data-en="Collect">รับคืน</h3><p data-en="Show your booking code, or have us deliver to the airport.">แสดงรหัสการจอง หรือให้เราส่งถึงสนามบิน</p></li>
+ </ol>
+</section>
+
+<section id="prices">
+ <h2 data-en="Prices">ราคาบริการ</h2>
+ <p class="lead" data-en="Per bag. Larger bags may cost more.">คิดต่อใบ กระเป๋าขนาดใหญ่อาจมีค่าบริการเพิ่ม</p>
+ <!-- TODO: replace placeholder prices with the client's real rates -->
+ <div class="row"><div><h3 data-en="Store at a branch">ฝากที่สาขา</h3><p data-en="Per bag, per day">ต่อใบ ต่อวัน</p></div><div class="price">₩0,000</div></div>
+ <div class="row"><div><h3 data-en="Hotel pick-up">รับถึงที่พัก</h3><p data-en="We collect and store your bags">เรารับกระเป๋าและนำไปเก็บให้</p></div><div class="price">₩0,000</div></div>
+ <div class="row"><div><h3 data-en="Airport delivery">ส่งสนามบิน</h3><p data-en="Delivered before your flight">ส่งถึงมือก่อนเวลาเดินทาง</p></div><div class="price">₩0,000</div></div>
+</section>
+
+<section id="branches">
+ <h2 data-en="Branches">สาขา</h2>
+ <p class="lead" data-en="Opening hours and map links for each branch.">เวลาทำการและแผนที่ของแต่ละสาขา</p>
+ <!-- TODO: replace with real branches -->
+ <div class="branches">
+  <div><h3 data-en="[Branch name 1]">[ชื่อสาขา 1]</h3><p data-en="[Address]">[ที่อยู่]</p><p data-en="Daily 09:00–21:00">ทุกวัน 09:00–21:00</p><p><a href="#" data-en="Open map">เปิดแผนที่</a></p></div>
+  <div><h3 data-en="[Branch name 2]">[ชื่อสาขา 2]</h3><p data-en="[Address]">[ที่อยู่]</p><p data-en="Daily 09:00–21:00">ทุกวัน 09:00–21:00</p><p><a href="#" data-en="Open map">เปิดแผนที่</a></p></div>
+ </div>
+</section>
+
+<section id="book">
+ <h2 data-en="Book your bags">จองฝากกระเป๋า</h2>
+ <p class="lead" data-en="Send the form and we will confirm by message.">ส่งแบบฟอร์ม แล้วเราจะยืนยันกลับทางข้อความ</p>
+ <form id="f">
+  <label><span data-en="Name">ชื่อ</span><input name="name" required></label>
+  <label><span data-en="LINE ID or email">LINE ID หรืออีเมล</span><input name="contact" required></label>
+  <label><span data-en="Service">บริการ</span>
+   <select name="service">
+    <option data-en="Store at a branch">ฝากที่สาขา</option>
+    <option data-en="Hotel pick-up">รับถึงที่พัก</option>
+    <option data-en="Airport delivery">ส่งสนามบิน</option>
+   </select></label>
+  <label><span data-en="Date">วันที่</span><input type="date" name="date" required></label>
+  <label><span data-en="Number of bags">จำนวนกระเป๋า</span><input type="number" name="bags" min="1" value="1" required></label>
+  <button class="btn" type="submit" data-en="Send booking request">ส่งคำขอจอง</button>
+ </form>
+</section>
+
+<section id="faq">
+ <h2 data-en="FAQ">คำถามที่พบบ่อย</h2>
+ <!-- TODO: confirm every answer with the client -->
+ <details><summary data-en="What can't I store?">อะไรที่ฝากไม่ได้บ้าง</summary><p data-en="Valuables, cash, perishable food and prohibited items cannot be stored.">ของมีค่า เงินสด อาหารสด และสิ่งของต้องห้ามไม่สามารถฝากได้</p></details>
+ <details><summary data-en="What if I'm late for pick-up?">ถ้ามารับช้ากว่ากำหนดล่ะ</summary><p data-en="Please message us. Extra days are charged at the daily rate.">แจ้งเราได้ทางข้อความ วันที่เกินจะคิดตามอัตรารายวัน</p></details>
+ <details><summary data-en="Are my bags insured?">กระเป๋ามีประกันไหม</summary><p data-en="Each booking has a liability limit. See the terms for details.">ทุกการจองมีวงเงินความรับผิดชอบ ดูรายละเอียดในเงื่อนไขการใช้บริการ</p></details>
+ <details><summary data-en="Can I cancel?">ยกเลิกการจองได้ไหม</summary><p data-en="Yes. Message us before your drop-off time.">ได้ แจ้งเราก่อนเวลานัดฝาก</p></details>
+</section>
+</main>
+
+<footer>
+ <div>EASY DROP · <span data-en="Contact us on LINE: @yourid">ติดต่อเราทาง LINE: @yourid</span></div>
+ <div>© 2026</div>
+</footer>
+</div>
+
+<script>
+document.querySelectorAll('[data-en]').forEach(e=>e.dataset.th=e.innerHTML);
+let en=false;
+document.getElementById('lang').onclick=function(){
+ en=!en;
+ document.documentElement.lang=en?'en':'th';
+ document.querySelectorAll('[data-en]').forEach(e=>e.innerHTML=en?e.dataset.en:e.dataset.th);
+ this.textContent=en?'ไทย':'EN';
+};
+document.getElementById('f').onsubmit=e=>{
+ e.preventDefault();
+ const body=[...new FormData(e.target)].map(([k,v])=>k+': '+v).join('\n');
+ // TODO: replace with the client's real email
+ location.href='mailto:hello@example.com?subject='+encodeURIComponent('EASY DROP booking')+'&body='+encodeURIComponent(body);
+};
+</script>
+</body>
+</html>
