@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>EASY DROP – Staff</title>
+<style>
+:root{--ink:#13233A;--paper:#EEF3F7;--tag:#FFC53D;--red:#D6403A;--mute:#51627A;--line:#C9D5E0}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 system-ui,"Noto Sans Thai",sans-serif}
+[hidden]{display:none!important}
+input,select,textarea,button{font:inherit;color:var(--ink)}
+input,select,textarea{width:100%;padding:8px 10px;border:1.5px solid var(--line);border-radius:6px;background:#fff}
+button{background:var(--ink);color:#fff;border:0;border-radius:6px;padding:8px 14px;cursor:pointer}
+button.alt{background:none;color:var(--ink);border:1.5px solid var(--ink)}
+:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+.box{max-width:340px;margin:12vh auto;padding:24px;background:#fff;border-radius:10px;display:grid;gap:10px}
+.err{color:var(--red);margin:0}
+header{display:flex;gap:14px;align-items:center;padding:12px 20px;background:var(--ink);color:#fff}
+header b{font-size:18px;margin-right:auto}
+header button{background:none;border:1.5px solid #fff}
+main{display:grid;grid-template-columns:320px 1fr;gap:20px;padding:20px;max-width:1200px;margin:auto}
+.card{background:#fff;border-radius:10px;padding:16px;margin-bottom:16px}
+h2,h3{margin:0 0 10px}
+.item{display:block;width:100%;text-align:left;background:#fff;color:var(--ink);border:1.5px solid var(--line);margin-bottom:8px}
+.item.on{border-color:var(--ink)}
+.item small{display:block;color:var(--mute)}
+.pill{background:var(--tag);border-radius:999px;padding:1px 10px;font-size:13px;font-weight:600}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid label{display:grid;gap:3px;font-weight:600;font-size:13px}
+.full{grid-column:1/-1}
+.bag{border-top:1px solid var(--line);padding:10px 0;display:flex;gap:10px;justify-content:space-between;align-items:center}
+.tl{border-left:3px solid var(--line);padding:2px 0 2px 12px;margin:0 0 10px}
+.tl.customer{border-color:var(--tag)}
+.tl small{color:var(--mute)}
+@media (max-width:820px){main{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<form id="lf" class="box">
+ <h2>EASY DROP staff</h2>
+ <input id="em" type="email" placeholder="Email" autocomplete="username" required>
+ <input id="pw" type="password" placeholder="Password" autocomplete="current-password" required>
+ <button>Sign in</button>
+ <p id="lerr" class="err"></p>
+</form>
+
+<div id="app" hidden>
+ <header><b>EASY DROP</b><span id="who"></span><button id="out">Sign out</button></header>
+ <main>
+  <div>
+   <button id="new" style="width:100%;margin-bottom:12px">New booking</button>
+   <select id="flt" style="margin-bottom:12px"></select>
+   <div id="list"></div>
+  </div>
+  <div id="detail"><div class="card">Pick a booking, or create a new one.</div></div>
+ </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+const sb=supabase.createClient('https://wmfcpcugyvwhvyfztnwp.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndtZmNwY3VneXZ3aHZ5Znp0bndwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA5MjcwMTEsImV4cCI6MjEwNjUwMzAxMX0.XCfQj9U-IFhltEWIVDMWXo8Qe4BJgcBk_Sv0rJKXMAw');
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const dt=x=>x?new Date(x).toLocaleString():'-';
+const STATUS=['requested','confirmed','picked_up','stored','ready','released','closed'];
+const SERVICE=['Store at a branch','Hotel pick-up','Airport delivery'];
+let me=null,cur=null;
+
+const ok=r=>{if(r.error){alert(r.error.message);throw r.error}return r.data};
+const show=b=>{$('#lf').hidden=b;$('#app').hidden=!b};
+
+async function boot(){
+ const {data:{session}}=await sb.auth.getSession();
+ if(!session)return show(false);
+ const {data:st}=await sb.from('staff').select('*').eq('id',session.user.id).maybeSingle();
+ if(!st){await sb.auth.signOut();$('#lerr').textContent='This account is not on the staff list.';return show(false)}
+ me=st;$('#who').textContent=st.name+' ('+st.role+')';
+ $('#flt').innerHTML='<option value="">All statuses</option>'+STATUS.map(s=>`<option>${s}</option>`).join('');
+ show(true);loadList();
+}
+
+$('#lf').onsubmit=async e=>{
+ e.preventDefault();$('#lerr').textContent='';
+ const {error}=await sb.auth.signInWithPassword({email:$('#em').value,password:$('#pw').value});
+ if(error)$('#lerr').textContent=error.message;else boot();
+};
+$('#out').onclick=async()=>{await sb.auth.signOut();location.reload()};
+$('#flt').onchange=loadList;
+
+async function loadList(){
+ let q=sb.from('bookings').select('id,code,status,service,drop_at,customers(name)').order('created_at',{ascending:false}).limit(100);
+ if($('#flt').value)q=q.eq('status',$('#flt').value);
+ const rows=ok(await q);
+ $('#list').innerHTML=rows.length?rows.map(b=>`<button class="item ${cur&&cur.id===b.id?'on':''}" data-open="${b.id}"><b>${esc(b.code)}</b> <span class="pill">${esc(b.status)}</span><small>${esc(b.customers?.name)} · ${esc(b.service)}</small></button>`).join(''):'<p>No bookings yet.</p>';
+}
+
+$('#new').onclick=()=>{
+ cur=null;
+ $('#detail').innerHTML=`<form class="card grid" id="nf"><h2 class="full">New booking</h2>
+ <label>Customer name<input name="name" required></label>
+ <label>LINE ID / email / phone<input name="contact"></label>
+ <label>Service<select name="service">${SERVICE.map(s=>`<option>${s}</option>`).join('')}</select></label>
+ <span></span>
+ <label>Drop-off time<input type="datetime-local" name="drop_at"></label>
+ <label>Pick-up time<input type="datetime-local" name="pickup_at"></label>
+ <button class="full">Create booking</button></form>`;
+};
+
+async function openBooking(id){
+ const b=ok(await sb.from('bookings').select('*,customers(*),bags(*),timeline(*,staff(name))').eq('id',id).single());
+ cur=b;loadList();
+ const tl=[...b.timeline].sort((x,y)=>x.id-y.id);
+ $('#detail').innerHTML=`
+ <div class="card"><h2>${esc(b.code)} <span class="pill">${esc(b.status)}</span></h2>
+  <p>${esc(b.customers?.name)} · ${esc(b.customers?.contact)}<br>${esc(b.service)}<br>Drop-off: ${dt(b.drop_at)} · Pick-up: ${dt(b.pickup_at)}</p>
+  <select id="st">${STATUS.map(s=>`<option ${s===b.status?'selected':''}>${s}</option>`).join('')}</select></div>
+
+ <div class="card"><h3>Bags (${b.bags.length})</h3>
+  ${b.bags.map(g=>`<div class="bag"><div><b>${esc(g.tag)}</b> ${esc(g.size)} · slot ${esc(g.slot)||'-'}<br><small>${esc(g.condition_note)}</small>${g.released_at?'<br><small>Released '+dt(g.released_at)+'</small>':''}</div>
+   <div>${g.photo_path?`<button class="alt" data-photo="${esc(g.photo_path)}">Photo</button> `:''}${g.released_at?'':`<button class="alt" data-rel="${g.id}" data-tag="${esc(g.tag)}">Release</button>`}</div></div>`).join('')}
+  <form id="bf" class="grid" style="margin-top:12px">
+   <label>Size<select name="size"><option>Small</option><option>Medium</option><option>Large</option><option>Extra large</option></select></label>
+   <label>Storage slot<input name="slot" placeholder="A-3"></label>
+   <label class="full">Condition notes<input name="condition_note" placeholder="Scratch on left side, wheel loose..."></label>
+   <label class="full">Intake photo<input type="file" name="photo" accept="image/*" capture="environment"></label>
+   <button class="full">Check in bag</button></form></div>
+
+ <div class="card"><h3>Timeline</h3>
+  ${tl.map(t=>`<div class="tl ${t.visibility}"><small>${dt(t.created_at)} · ${esc(t.staff?.name)} · ${esc(t.kind)} · ${esc(t.visibility)}</small><br>${esc(t.body)}</div>`).join('')||'<p>Nothing logged yet.</p>'}
+  <form id="tf" class="grid">
+   <label>Type<select name="kind"><option>note</option><option>message</option><option>payment</option></select></label>
+   <label>Visible to<select name="visibility"><option>internal</option><option>customer</option></select></label>
+   <label class="full">Entry<textarea name="body" rows="3" required></textarea></label>
+   <button class="full">Add to timeline</button></form>
+  <p><small>The log is add-only. To correct something, add a new entry.</small></p></div>`;
+}
+
+const log=(booking_id,kind,body,visibility='internal')=>sb.from('timeline').insert({booking_id,author:me.id,kind,visibility,body}).then(ok);
+
+document.addEventListener('click',async e=>{
+ const t=e.target.closest('button');if(!t)return;
+ if(t.dataset.open)openBooking(t.dataset.open);
+ if(t.dataset.photo){const r=await sb.storage.from('bag-photos').createSignedUrl(t.dataset.photo,300);if(r.data)window.open(r.data.signedUrl,'_blank');else alert(r.error.message)}
+ if(t.dataset.rel&&confirm('Release bag '+t.dataset.tag+' to the customer?')){
+  ok(await sb.from('bags').update({released_at:new Date().toISOString()}).eq('id',t.dataset.rel));
+  await log(cur.id,'status','Bag '+t.dataset.tag+' released to customer');openBooking(cur.id);
+ }
+});
+
+document.addEventListener('change',async e=>{
+ if(e.target.id!=='st')return;
+ ok(await sb.from('bookings').update({status:e.target.value}).eq('id',cur.id));
+ await log(cur.id,'status','Status changed to '+e.target.value);openBooking(cur.id);
+});
+
+document.addEventListener('submit',async e=>{
+ const f=e.target,d=Object.fromEntries(new FormData(f));
+ if(f.id==='nf'){
+  e.preventDefault();
+  const c=ok(await sb.from('customers').insert({name:d.name,contact:d.contact}).select().single());
+  const code='ED-'+Math.random().toString(36).slice(2,7).toUpperCase();
+  const b=ok(await sb.from('bookings').insert({code,customer_id:c.id,service:d.service,drop_at:d.drop_at||null,pickup_at:d.pickup_at||null}).select().single());
+  await log(b.id,'status','Booking created');openBooking(b.id);
+ }
+ if(f.id==='bf'){
+  e.preventDefault();
+  const tag=cur.code+'-'+(cur.bags.length+1);
+  let photo_path=null;const file=d.photo;
+  if(file&&file.size){
+   photo_path=cur.id+'/'+tag+'.'+(file.name.split('.').pop()||'jpg');
+   const u=await sb.storage.from('bag-photos').upload(photo_path,file);
+   if(u.error){alert(u.error.message);return}
+  }
+  ok(await sb.from('bags').insert({booking_id:cur.id,tag,size:d.size,slot:d.slot,condition_note:d.condition_note,photo_path,checked_in_by:me.id}));
+  await log(cur.id,'status','Bag '+tag+' checked in ('+d.size+')'+(d.condition_note?': '+d.condition_note:''));openBooking(cur.id);
+ }
+ if(f.id==='tf'){
+  e.preventDefault();
+  await log(cur.id,d.kind,d.body,d.visibility);openBooking(cur.id);
+ }
+});
+
+boot();
+</script>
+</body>
+</html>
