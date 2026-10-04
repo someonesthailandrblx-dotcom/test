@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ข้อมูลรับพัสดุจากลูกค้า</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;700&family=Sarabun:wght@400;600&family=Noto+Sans+KR:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#13233A;--paper:#EEF3F7;--tag:#FFC53D;--red:#D6403A;--mute:#51627A;--line:#C9D5E0}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.6 Sarabun,"Noto Sans KR",sans-serif}
+h1,h2,legend,.brand{font-family:Prompt,"Noto Sans KR",sans-serif}
+:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+.wrap{max-width:760px;margin:auto;padding:0 20px 60px}
+header{display:flex;justify-content:space-between;align-items:center;padding:18px 0}
+.brand{font-weight:700;font-size:21px;text-decoration:none;color:inherit}
+.lg button{background:none;border:1.5px solid var(--ink);color:var(--ink);padding:2px 12px;font:600 14px Sarabun;cursor:pointer}
+.lg button:first-child{border-radius:999px 0 0 999px}
+.lg button:last-child{border-radius:0 999px 999px 0}
+.lg button+button{border-left:0}
+.lg button.on{background:var(--ink);color:#fff}
+h1{font-size:clamp(28px,5vw,40px);margin:28px 0 6px}
+.note{color:var(--mute);font-size:15px}
+fieldset{border:0;border-left:4px solid var(--tag);background:#fff;border-radius:10px;margin:22px 0;padding:8px 18px 18px}
+legend{float:left;width:100%;font-size:20px;font-weight:700;padding:0;margin:0 0 12px}
+legend+.g{clear:both}
+.g{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.w{grid-column:1/-1}
+label{display:grid;gap:3px;font-weight:600;font-size:15px}
+input,select,textarea{width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:8px;font:inherit;color:var(--ink);background:#fff}
+select:disabled{background:#F2F5F8;color:var(--mute)}
+.limit{background:#FFF4D6;border-left:4px solid var(--tag);padding:8px 12px;border-radius:6px;font-size:15px;margin:0 0 4px}
+.price{font-weight:400;color:var(--mute);font-size:14px}
+.total{display:flex;justify-content:space-between;align-items:baseline;gap:12px;border-top:2px dashed var(--ink);padding-top:12px;margin-top:6px}
+.total b{font:700 30px Prompt,sans-serif}
+.chk{display:flex;gap:10px;align-items:flex-start;font-weight:400}
+.chk input{width:auto;margin-top:6px}
+button.go{background:var(--ink);color:#fff;border:0;border-radius:8px;padding:13px 30px;font:500 17px Prompt,"Noto Sans KR",sans-serif;cursor:pointer;margin-top:12px}
+button.go:disabled{opacity:.5}
+.hp{position:absolute;left:-9999px}
+.ok{background:#fff;border-radius:10px;padding:28px;text-align:center}
+.code{font:700 38px Prompt;background:var(--tag);display:inline-block;padding:4px 22px;border-radius:8px;margin:6px 0}
+@media (max-width:620px){.g{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+ <a class="brand" href="index.html">EASY DROP</a>
+ <div class="lg" id="lg"><button data-l="th">ไทย</button><button data-l="en">EN</button><button data-l="ko">한국어</button></div>
+</header>
+<h1 data-k="title"></h1>
+<p class="note" data-k="note"></p>
+<form id="f"></form>
+
+<script src="kr-data.js"></script>
+<script>
+const URL_='https://wmfcpcugyvwhvyfztnwp.supabase.co',KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndtZmNwY3VneXZ3aHZ5Znp0bndwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA5MjcwMTEsImV4cCI6MjEwNjUwMzAxMX0.XCfQj9U-IFhltEWIVDMWXo8Qe4BJgcBk_Sv0rJKXMAw';
+const MAXBOX=10;
+// placeholder prices; the live prices are read from the database below
+const PRICE={box_no5:6000,box_no6:7500};
+const $=s=>document.querySelector(s);
+const LI={th:0,en:1,ko:2};
+const D={
+ title:['ข้อมูลรับพัสดุจากลูกค้า','Parcel pick-up request','소포 수거 신청'],
+ note:['กรุณากรอกข้อมูลให้ครบถ้วน ช่องที่มี * ต้องกรอก','Please fill in every field marked *.','* 표시 항목은 모두 입력해 주세요.'],
+ who:['ข้อมูลผู้ติดต่อ','Your details','신청자 정보'],
+ where:['ที่รับพัสดุในเกาหลี (배송 위치)','Pick-up address in Korea','수거 주소 (한국)'],
+ boxes:['วันที่รับพัสดุและจำนวนกล่อง','Pick-up date and boxes','수거 일자 및 박스'],
+ fn:['ชื่อ','First name','이름'],ln:['นามสกุล','Last name','성'],
+ zip:['รหัสไปรษณีย์ (5 หลัก)','Postal code (5 digits)','우편번호 (5자리)'],
+ kprov:['จังหวัด (시·도)','Province (시·도)','시·도'],city:['เขต (시·군·구)','City or district (시·군·구)','시·군·구'],
+ pickprov:['เลือกจังหวัดก่อน','Select the province first','시·도를 먼저 선택하세요'],pick:['-- เลือก --','-- Select --','-- 선택 --'],
+ street:['ชื่อถนน','Street name','도로명'],bno:['บ้านเลขที่','Building number','건물번호'],
+ place:['ชื่อสถานที่','Place name','장소명'],dong:['ตึก (동)','Building (dong)','동'],ho:['เลขห้อง (호)','Room (ho)','호'],
+ phone:['เบอร์ติดต่อ','Phone number','연락처'],email:['อีเมล','Email','이메일'],
+ date:['วันที่รับพัสดุ','Pick-up date','수거 일자'],
+ limit:['จำนวนรวมของกล่องห้ามเกิน 10 กล่อง ต่อ 1 รอบขนส่ง','No more than 10 boxes in total per delivery run.','1회 배송당 총 박스 개수는 10개를 초과할 수 없습니다.'],
+ box5:['กล่องเบอร์ 5 (호) (15 kg / 120 cm)','Box no. 5 (15 kg / 120 cm)','5호 박스 (15kg / 120cm)'],
+ box6:['กล่องเบอร์ 6 (호) (20 kg / 140 cm)','Box no. 6 (20 kg / 140 cm)','6호 박스 (20kg / 140cm)'],
+ perbox:['ต่อกล่อง','per box','박스당'],
+ total:['ราคาขนส่งกล่องทั้งหมด','Total delivery fee','총 배송비'],
+ hint:['เลือกจำนวนกล่องเพื่อคำนวณราคา','Choose the number of boxes to see the price.','박스 수를 선택하면 요금이 계산됩니다.'],
+ est:['ราคานี้เป็นราคาเบื้องต้น ทีมงานจะยืนยันราคาสุดท้ายอีกครั้ง','This is an estimate. Our staff will confirm the final price.','안내된 요금은 예상 금액이며, 최종 요금은 담당 직원이 확인해 드립니다.'],
+ needbox:['กรุณาเลือกกล่องอย่างน้อย 1 กล่อง','Please choose at least 1 box.','박스를 1개 이상 선택해 주세요.'],
+ agree:['ฉันยอมรับ','I accept the',''],terms:['เงื่อนไขการบริการและนโยบายความเป็นส่วนตัว','terms of service and privacy policy','서비스 이용약관 및 개인정보 처리방침'],agree2:['','','에 동의합니다'],
+ submit:['ส่งคำขอรับพัสดุ','Send pick-up request','수거 신청하기'],
+ safe:['ข้อมูลของคุณจะถูกบันทึกอย่างปลอดภัย และเจ้าหน้าที่เท่านั้นที่เห็นได้','Your details are stored securely and only our staff can see them.','입력하신 정보는 안전하게 저장되며 담당 직원만 열람할 수 있습니다.'],
+ ok:['ส่งคำขอเรียบร้อยแล้ว','Request sent','신청이 완료되었습니다'],
+ okn:['กรุณาเก็บหมายเลขคำขอนี้ไว้ ทีมงานจะติดต่อกลับทางเบอร์หรืออีเมลที่ให้ไว้','Please keep this request number. We will contact you by the phone or email you gave.','접수번호를 보관해 주세요. 입력하신 연락처나 이메일로 연락드리겠습니다.'],
+ err:['ส่งไม่สำเร็จ กรุณาลองใหม่อีกครั้ง','Could not send. Please try again.','제출하지 못했습니다. 다시 시도해 주세요.'],
+ home:['กลับหน้าหลัก','Back to home','홈으로']
+};
+const REG=window.KR_REGIONS||[];
+const field=(k,o={})=>`<label class="${o.w?'w':''}"><span><span data-k="${k}"></span>${o.o?'':' *'}</span><input name="${k}" ${o.type?`type="${o.type}"`:''} ${o.a||''} ${o.o?'':'required'}></label>`;
+const krProv=`<label><span><span data-k="kprov"></span> *</span><select name="prov" data-kr="1" required><option value="" data-k="pick"></option>${REG.map(r=>`<option value="${r.ko}">${r.ko} (${r.en})</option>`).join('')}</select></label>`;
+const krCity=`<label><span><span data-k="city"></span> *</span><select name="city" id="city" required disabled><option value="" data-k="pickprov"></option></select></label>`;
+const zip={a:'pattern="[0-9]{5}" inputmode="numeric" maxlength="5"'};
+const boxRow=n=>`<label><span><span data-k="box${n}"></span> <span class="price" id="pr${n}"></span></span><select name="box${n}" id="b${n}"><option>0</option></select></label>`;
+
+$('#f').innerHTML=`
+<fieldset><legend data-k="who"></legend><div class="g">
+${field('fn')}${field('ln')}${field('phone',{type:'tel'})}${field('email',{type:'email'})}
+</div></fieldset>
+<fieldset><legend data-k="where"></legend><div class="g">
+${field('zip',zip)}${krProv}${krCity}${field('street',{o:1})}${field('bno')}${field('place',{o:1})}${field('dong',{o:1})}${field('ho',{o:1})}
+</div></fieldset>
+<fieldset><legend data-k="boxes"></legend><div class="g">
+<label class="w"><span><span data-k="date"></span> *</span><input type="date" name="pickup_date" id="pd" required></label>
+<p class="limit w" data-k="limit"></p>
+${boxRow(5)}${boxRow(6)}
+</div>
+<div class="total"><span data-k="total"></span><b id="tot"></b></div>
+<p class="note" id="hint"></p>
+</fieldset>
+<label class="chk"><input type="checkbox" name="consent" required><span><span data-k="agree"></span> <a href="legal.html#terms" target="_blank" rel="noopener" data-k="terms"></a><span data-k="agree2"></span></span></label>
+<input name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+<button class="go" data-k="submit"></button>
+<p class="note" data-k="safe"></p>`;
+
+// earliest pick-up date is today in Korea; latest is one year ahead
+const kst=Date.now()+9*3600e3;
+$('#pd').min=new Date(kst).toISOString().slice(0,10);
+$('#pd').max=new Date(kst+365*864e5).toISOString().slice(0,10);
+
+const won=n=>'₩'+Number(n).toLocaleString('en-US');
+const qty=n=>parseInt($('#b'+n).value,10)||0;
+// each box type can only use what the other one leaves free of the 10-box limit
+function fillOptions(){
+ for(const n of [5,6]){
+  const other=qty(n===5?6:5),max=MAXBOX-other,s=$('#b'+n),cur=Math.min(qty(n),max);
+  s.innerHTML=Array.from({length:max+1},(_,i)=>`<option${i===cur?' selected':''}>${i}</option>`).join('');
+ }
+}
+function render(){
+ $('#pr5').textContent='· '+won(PRICE.box_no5)+' '+D.perbox[LI[LANG]];
+ $('#pr6').textContent='· '+won(PRICE.box_no6)+' '+D.perbox[LI[LANG]];
+ const n=qty(5)+qty(6),t=qty(5)*PRICE.box_no5+qty(6)*PRICE.box_no6;
+ $('#tot').textContent=won(n?t:0);
+ $('#hint').textContent=D[n?'est':'hint'][LI[LANG]];
+}
+fillOptions();
+['b5','b6'].forEach(id=>$('#'+id).addEventListener('change',()=>{fillOptions();render()}));
+
+let LANG='th';
+function setLang(l){
+ LANG=l;document.documentElement.lang=l;
+ document.querySelectorAll('[data-k]').forEach(e=>e.textContent=D[e.dataset.k][LI[l]]);
+ document.title=D.title[LI[l]];
+ document.querySelectorAll('#lg button').forEach(b=>b.classList.toggle('on',b.dataset.l===l));
+ try{localStorage.setItem('lang',l)}catch(_){}
+ render();
+}
+document.querySelectorAll('#lg button').forEach(b=>b.onclick=()=>setLang(b.dataset.l));
+let sv=null;try{sv=localStorage.getItem('lang')}catch(_){}
+setLang(LI[sv]!==undefined?sv:'th');
+
+// the district list follows the province that was picked
+document.addEventListener('change',e=>{
+ if(!(e.target.dataset&&e.target.dataset.kr))return;
+ const r=REG.find(x=>x.ko===e.target.value),c=$('#city');
+ if(!r){c.disabled=true;c.innerHTML='<option value="" data-k="pickprov"></option>'}
+ else{
+  const one=r.d.length===1;c.disabled=false;
+  c.innerHTML=(one?'':'<option value="" data-k="pick"></option>')+r.d.map(([a,b])=>`<option value="${a}"${one?' selected':''}>${a} (${b})</option>`).join('');
+ }
+ setLang(LANG);
+});
+
+// live prices (staff can change them in the back-office)
+fetch(URL_+'/rest/v1/prices?select=key,amount_krw',{headers:{apikey:KEY,Authorization:'Bearer '+KEY}})
+ .then(r=>r.ok?r.json():[]).then(rows=>{rows.forEach(x=>{if(x.key in PRICE)PRICE[x.key]=x.amount_krw});render()}).catch(()=>{});
+
+function done(code){
+ $('#f').innerHTML=`<div class="ok"><h2 data-k="ok"></h2><div class="code">${code}</div><p data-k="okn"></p><p><a href="index.html" data-k="home"></a></p></div>`;
+ setLang(LANG);
+}
+$('#f').onsubmit=async e=>{
+ e.preventDefault();
+ const d=Object.fromEntries(new FormData(e.target));
+ if(d.website)return done('PU-000000');
+ const b5=qty(5),b6=qty(6);
+ if(b5+b6<1||b5+b6>MAXBOX){alert(D.needbox[LI[LANG]]);return}
+ const code='PU-'+Array.from(crypto.getRandomValues(new Uint8Array(6)),x=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[x%32]).join('');
+ const contact={};['fn','ln','phone','email','zip','prov','city','street','bno','place','dong','ho'].forEach(k=>contact[k]=d[k]||'');
+ const btn=e.target.querySelector('.go');btn.disabled=true;
+ try{
+  const r=await fetch(URL_+'/rest/v1/pickup_requests',{method:'POST',
+   headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
+   // the total is not sent: the database works it out from the current prices
+   body:JSON.stringify({code,language:LANG,contact,pickup_date:d.pickup_date,box5:b5,box6:b6,consent_version:'v1',consent_at:new Date().toISOString()})});
+  if(!r.ok)throw new Error(r.status);
+  done(code);
+ }catch(_){alert(D.err[LI[LANG]]);btn.disabled=false}
+};
+</script>
+</div>
+</body>
+</html>
