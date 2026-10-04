@@ -54,6 +54,7 @@ fieldset{border:1.5px solid var(--line);border-radius:8px;margin:0;padding:10px}
    <button id="new" style="width:100%;margin-bottom:12px">New booking</button>
    <button id="par" class="alt" style="width:100%;margin-bottom:12px">Parcel requests (to Thailand)</button>
    <button id="pu" class="alt" style="width:100%;margin-bottom:12px">Pickup requests (in Korea)</button>
+   <button id="bo" class="alt" style="width:100%;margin-bottom:12px">Box orders</button>
    <button id="pr" class="alt" style="width:100%;margin-bottom:12px">Prices</button>
    <select id="flt" style="margin-bottom:12px"></select>
    <div id="list"></div>
@@ -165,6 +166,7 @@ document.addEventListener('click',async e=>{
  if(t.dataset.open)openBooking(t.dataset.open);
  if(t.dataset.pr)showPR(t.dataset.pr);
  if(t.dataset.pu)showPU(t.dataset.pu);
+ if(t.dataset.bo)showBO(t.dataset.bo);
  if(t.dataset.photo){const r=await sb.storage.from('bag-photos').createSignedUrl(t.dataset.photo,300);if(r.data)window.open(r.data.signedUrl,'_blank');else alert(r.error.message)}
  if(t.dataset.rel&&confirm('Release bag '+t.dataset.tag+' to the customer?')){
   ok(await sb.from('bags').update({released_at:new Date().toISOString()}).eq('id',t.dataset.rel));
@@ -250,7 +252,7 @@ function showPU(id){
 }
 $('#pr').onclick=async()=>{
  const rows=ok(await sb.from('prices').select('*').order('key'));
- $('#detail').innerHTML='<div class="card"><h2>Prices</h2><p><small>These prices are used by the public pickup form. They are placeholders until the client confirms the real rates. Changes apply to new requests only.</small></p>'
+ $('#detail').innerHTML='<div class="card"><h2>Prices</h2><p><small>These prices are used by the public pickup and box order forms. They are placeholders until the client confirms the real rates. Changes apply to new requests only.</small></p>'
   +rows.map(r=>`<label style="margin-top:10px">${esc(r.label)} (KRW)<input type="number" min="0" step="100" data-price="${esc(r.key)}" value="${r.amount_krw}"></label>`).join('')
   +'<button id="prsave" style="margin-top:12px">Save prices</button></div>';
  $('#prsave').onclick=async()=>{
@@ -258,6 +260,27 @@ $('#pr').onclick=async()=>{
   alert('Saved');
  };
 };
+
+let BO=[];
+const BOX_LINES=[['Box no. 4 (41×31×28 cm)','box4'],['Box no. 5 (48×38×34 cm)','box5'],['Box no. 6 (52×48×40 cm)','box6'],['Packing tape (roll)','tape']];
+$('#bo').onclick=async()=>{
+ BO=ok(await sb.from('box_orders').select('*').order('created_at',{ascending:false}).limit(100));
+ $('#detail').innerHTML='<div class="card"><h2>Box orders</h2>'+(BO.map(x=>`<button class="item" data-bo="${x.id}"><b>${esc(x.code)}</b> <span class="pill">${esc(x.status)}</span><small>${esc(x.customer.fn)} ${esc(x.customer.ln)} · ${dt(x.created_at)} · ${won(x.total_krw)}</small></button>`).join('')||'<p>None yet.</p>')+'</div>';
+};
+function showBO(id){
+ const x=BO.find(r=>r.id===id),c=x.customer;
+ const lines=BOX_LINES.filter(([,k])=>x['qty_'+k]>0).map(([n,k])=>`${esc(n)}: ${x['qty_'+k]} × ${won(x['unit_'+k])} = ${won(x['qty_'+k]*x['unit_'+k])}`).join('<br>');
+ $('#detail').innerHTML=`<div class="card"><h2>${esc(x.code)} <span class="pill">${esc(x.status)}</span></h2>
+ <p><b>${esc(c.fn)} ${esc(c.ln)}</b> · ${esc(c.phone)} · ${esc(c.email)}</p>
+ <p><b>Delivery address</b><br>${esc([c.zip,c.prov,c.city,c.street,c.bno,c.place,c.dong,c.ho].filter(Boolean).join(' '))}</p>
+ <p><b>Items</b><br>${lines}<br><b>Total ${won(x.total_krw)}</b></p>
+ <p><small>Customer language: ${esc(x.language)} · Terms ${esc(x.consent_version)} accepted ${dt(x.consent_at)} · Ordered ${dt(x.created_at)}</small></p>
+ <select id="bost">${['new','confirmed','shipped','delivered','closed','cancelled'].map(v=>`<option ${v===x.status?'selected':''}>${v}</option>`).join('')}</select>
+ <label style="margin-top:12px">Staff note<textarea id="bonote" rows="3">${esc(x.staff_note)}</textarea></label>
+ <button id="bosave" style="margin-top:8px">Save note</button></div>`;
+ $('#bost').onchange=async e=>{ok(await sb.from('box_orders').update({status:e.target.value}).eq('id',id));$('#bo').click()};
+ $('#bosave').onclick=async()=>{ok(await sb.from('box_orders').update({staff_note:$('#bonote').value}).eq('id',id));x.staff_note=$('#bonote').value;alert('Saved')};
+}
 
 boot();
 </script>
