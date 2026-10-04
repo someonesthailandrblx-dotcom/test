@@ -50,6 +50,7 @@ button.go:disabled{opacity:.5}
 <p class="note" data-k="note"></p>
 <form id="f"></form>
 
+<script src="kr-data.js"></script>
 <script>
 const URL_='https://wmfcpcugyvwhvyfztnwp.supabase.co',KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndtZmNwY3VneXZ3aHZ5Znp0bndwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA5MjcwMTEsImV4cCI6MjEwNjUwMzAxMX0.XCfQj9U-IFhltEWIVDMWXo8Qe4BJgcBk_Sv0rJKXMAw';
 const $=s=>document.querySelector(s);
@@ -62,7 +63,7 @@ const D={
  cus:['ใบสำแดงสินค้าศุลกากร','Customs declaration','세관신고서'],
  fn:['ชื่อ','First name','이름'],ln:['นามสกุล','Last name','성'],
  zip:['รหัสไปรษณีย์ (5 หลัก)','Postal code (5 digits)','우편번호 (5자리)'],
- prov:['จังหวัด','Province','시·도'],city:['เขต / อำเภอ','City or district','시·군·구'],
+ prov:['จังหวัด','Province','도'],kprov:['จังหวัด (시·도)','Province (시·도)','시·도'],city:['เขต (시·군·구)','City or district (시·군·구)','시·군·구'],pickprov:['เลือกจังหวัดก่อน','Select the province first','시·도를 먼저 선택하세요'],
  street:['ชื่อถนน','Street name','도로명'],bno:['บ้านเลขที่','Building number','건물번호'],
  place:['ชื่อสถานที่','Place name','장소명'],dong:['ตึก (동)','Building (dong)','동'],ho:['เลขห้อง (호)','Room (ho)','호'],
  phone:['เบอร์ติดต่อ','Phone number','연락처'],email:['อีเมล','Email','이메일'],addr:['ที่อยู่','Address','주소'],
@@ -76,18 +77,20 @@ const D={
  err:['ส่งไม่สำเร็จ กรุณาลองใหม่อีกครั้ง','Could not submit. Please try again.','제출하지 못했습니다. 다시 시도해 주세요.'],
  home:['กลับหน้าหลัก','Back to home','홈으로']
 };
-const KRP=[['서울','Seoul'],['부산','Busan'],['대구','Daegu'],['인천','Incheon'],['광주','Gwangju'],['대전','Daejeon'],['울산','Ulsan'],['세종','Sejong'],['경기도','Gyeonggi-do'],['강원도','Gangwon-do'],['충청북도','Chungcheongbuk-do'],['충청남도','Chungcheongnam-do'],['전라북도','Jeollabuk-do'],['전라남도','Jeollanam-do'],['경상북도','Gyeongsangbuk-do'],['경상남도','Gyeongsangnam-do'],['제주','Jeju']];
 const THP='กรุงเทพมหานคร|Bangkok;เชียงใหม่|Chiang Mai;เชียงราย|Chiang Rai;ลำปาง|Lampang;ลำพูน|Lamphun;แม่ฮ่องสอน|Mae Hong Son;น่าน|Nan;พะเยา|Phayao;แพร่|Phrae;อุตรดิตถ์|Uttaradit;กาฬสินธุ์|Kalasin;ขอนแก่น|Khon Kaen;ชัยภูมิ|Chaiyaphum;นครพนม|Nakhon Phanom;นครราชสีมา|Nakhon Ratchasima;บึงกาฬ|Bueng Kan;บุรีรัมย์|Buriram;มหาสารคาม|Maha Sarakham;มุกดาหาร|Mukdahan;ยโสธร|Yasothon;ร้อยเอ็ด|Roi Et;เลย|Loei;สกลนคร|Sakon Nakhon;สุรินทร์|Surin;ศรีสะเกษ|Sisaket;หนองคาย|Nong Khai;หนองบัวลำภู|Nong Bua Lamphu;อุดรธานี|Udon Thani;อุบลราชธานี|Ubon Ratchathani;อำนาจเจริญ|Amnat Charoen;กำแพงเพชร|Kamphaeng Phet;ชัยนาท|Chai Nat;นครนายก|Nakhon Nayok;นครปฐม|Nakhon Pathom;นครสวรรค์|Nakhon Sawan;นนทบุรี|Nonthaburi;ปทุมธานี|Pathum Thani;พระนครศรีอยุธยา|Phra Nakhon Si Ayutthaya;พิจิตร|Phichit;พิษณุโลก|Phitsanulok;เพชรบูรณ์|Phetchabun;ลพบุรี|Lopburi;สมุทรปราการ|Samut Prakan;สมุทรสงคราม|Samut Songkhram;สมุทรสาคร|Samut Sakhon;สิงห์บุรี|Sing Buri;สุโขทัย|Sukhothai;สุพรรณบุรี|Suphan Buri;สระบุรี|Saraburi;อ่างทอง|Ang Thong;อุทัยธานี|Uthai Thani;จันทบุรี|Chanthaburi;ฉะเชิงเทรา|Chachoengsao;ชลบุรี|Chonburi;ตราด|Trat;ปราจีนบุรี|Prachinburi;ระยอง|Rayong;สระแก้ว|Sa Kaeo;กาญจนบุรี|Kanchanaburi;ตาก|Tak;ประจวบคีรีขันธ์|Prachuap Khiri Khan;เพชรบุรี|Phetchaburi;ราชบุรี|Ratchaburi;กระบี่|Krabi;ชุมพร|Chumphon;ตรัง|Trang;นครศรีธรรมราช|Nakhon Si Thammarat;นราธิวาส|Narathiwat;ปัตตานี|Pattani;พังงา|Phang Nga;พัทลุง|Phatthalung;ภูเก็ต|Phuket;ระนอง|Ranong;สตูล|Satun;สงขลา|Songkhla;สุราษฎร์ธานี|Surat Thani;ยะลา|Yala'.split(';').map(x=>x.split('|'));
 
 const field=(p,k,o={})=>`<label class="${o.w?'w':''}"><span><span data-k="${k}"></span>${o.o?'':' *'}</span>${o.t
  ?`<textarea name="${p}_${k}" rows="3" ${o.o?'':'required'}></textarea>`
  :`<input name="${p}_${k}" ${o.type?`type="${o.type}"`:''} ${o.a||''} ${o.o?'':'required'}>`}</label>`;
 const sel=(p,k,list)=>`<label><span><span data-k="${k}"></span> *</span><select name="${p}_${k}" required><option value="" data-k="pick"></option>${list.map(([a,b])=>`<option value="${b}">${a} (${b})</option>`).join('')}</select></label>`;
+const REG=window.KR_REGIONS||[];
+const krProv=p=>`<label><span><span data-k="kprov"></span> *</span><select name="${p}_prov" data-kr="${p}" required><option value="" data-k="pick"></option>${REG.map(r=>`<option value="${r.ko}">${r.ko} (${r.en})</option>`).join('')}</select></label>`;
+const krCity=p=>`<label><span><span data-k="city"></span> *</span><select name="${p}_city" id="${p}_city" required disabled><option value="" data-k="pickprov"></option></select></label>`;
 const zip={a:'pattern="[0-9]{5}" inputmode="numeric" maxlength="5"'};
 
 $('#f').innerHTML=`
 <fieldset><legend data-k="snd"></legend><div class="g">
-${field('s','fn')}${field('s','ln')}${field('s','zip',zip)}${sel('s','prov',KRP)}${field('s','city')}${field('s','street',{o:1})}${field('s','bno')}${field('s','place',{o:1})}${field('s','dong',{o:1})}${field('s','ho',{o:1})}${field('s','phone',{type:'tel'})}${field('s','email',{type:'email'})}
+${field('s','fn')}${field('s','ln')}${field('s','zip',zip)}${krProv('s')}${krCity('s')}${field('s','street',{o:1})}${field('s','bno')}${field('s','place',{o:1})}${field('s','dong',{o:1})}${field('s','ho',{o:1})}${field('s','phone',{type:'tel'})}${field('s','email',{type:'email'})}
 </div></fieldset>
 <fieldset><legend data-k="rcv"></legend><div class="g">
 ${field('r','fn')}${field('r','ln')}${field('r','zip',zip)}${sel('r','prov',THP)}${field('r','addr',{t:1,w:1})}${field('r','phone',{type:'tel'})}${field('r','email',{type:'email'})}
@@ -112,6 +115,18 @@ function setLang(l){
 document.querySelectorAll('#lg button').forEach(b=>b.onclick=()=>setLang(b.dataset.l));
 let sv=null;try{sv=localStorage.getItem('lang')}catch(_){}
 setLang(LI[sv]!==undefined?sv:'th');
+
+// the district list follows the province that was picked
+document.addEventListener('change',e=>{
+ const p=e.target.dataset&&e.target.dataset.kr;if(!p)return;
+ const r=REG.find(x=>x.ko===e.target.value),c=document.getElementById(p+'_city');
+ if(!r){c.disabled=true;c.innerHTML='<option value="" data-k="pickprov"></option>'}
+ else{
+  const one=r.d.length===1;c.disabled=false;
+  c.innerHTML=(one?'':'<option value="" data-k="pick"></option>')+r.d.map(([a,b])=>`<option value="${a}"${one?' selected':''}>${a} (${b})</option>`).join('');
+ }
+ setLang(LANG);
+});
 
 const pick=(d,p)=>Object.fromEntries(Object.entries(d).filter(([k])=>k.startsWith(p+'_')).map(([k,v])=>[k.slice(2),v]));
 function done(code){
