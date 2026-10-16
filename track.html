@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ติดตามสถานะ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;700&family=Sarabun:wght@400;600&family=Noto+Sans+KR:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#13233A;--paper:#EEF3F7;--tag:#FFC53D;--red:#D6403A;--mute:#51627A;--line:#C9D5E0}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.6 Sarabun,"Noto Sans KR",sans-serif}
+h1,h2,legend,.brand{font-family:Prompt,"Noto Sans KR",sans-serif}
+:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+.wrap{max-width:760px;margin:auto;padding:0 20px 60px}
+header{display:flex;justify-content:space-between;align-items:center;padding:18px 0}
+.brand{font-weight:700;font-size:21px;text-decoration:none;color:inherit}
+.lg button{background:none;border:1.5px solid var(--ink);color:var(--ink);padding:2px 12px;font:600 14px Sarabun;cursor:pointer}
+.lg button:first-child{border-radius:999px 0 0 999px}
+.lg button:last-child{border-radius:0 999px 999px 0}
+.lg button+button{border-left:0}
+.lg button.on{background:var(--ink);color:#fff}
+h1{font-size:clamp(28px,5vw,40px);margin:28px 0 6px}
+.note{color:var(--mute);font-size:15px}
+fieldset{border:0;border-left:4px solid var(--tag);background:#fff;border-radius:10px;margin:22px 0;padding:8px 18px 18px}
+legend{float:left;width:100%;font-size:20px;font-weight:700;padding:0;margin:0 0 12px}
+legend+.g{clear:both}
+.g{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.w{grid-column:1/-1}
+label{display:grid;gap:3px;font-weight:600;font-size:15px}
+input,select,textarea{width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:8px;font:inherit;color:var(--ink);background:#fff}
+.chk{display:flex;gap:10px;align-items:flex-start;font-weight:400}
+.chk input{width:auto;margin-top:6px}
+button.go{background:var(--ink);color:#fff;border:0;border-radius:8px;padding:13px 30px;font:500 17px Prompt,"Noto Sans KR",sans-serif;cursor:pointer;margin-top:12px}
+button.go:disabled{opacity:.5}
+.hp{position:absolute;left:-9999px}
+.ok{background:#fff;border-radius:10px;padding:28px;text-align:center}
+.code{font:700 38px Prompt;background:var(--tag);display:inline-block;padding:4px 22px;border-radius:8px;margin:6px 0}
+@media (max-width:620px){.g{grid-template-columns:1fr}}
+.trk{display:flex;gap:10px;margin:18px 0}
+.trk input{font:600 20px Prompt;letter-spacing:.06em;text-transform:uppercase}
+.trk button{background:var(--ink);color:#fff;border:0;border-radius:8px;padding:0 26px;font:500 17px Prompt,"Noto Sans KR",sans-serif;cursor:pointer}
+.res{background:#fff;border-radius:10px;border-left:4px solid var(--tag);padding:20px 22px;margin:18px 0}
+.res h2{margin:0 0 2px;font-size:24px}
+.res .kind{color:var(--mute);margin:0 0 14px}
+.steps{list-style:none;margin:10px 0 14px;padding:0}
+.steps li{position:relative;padding:6px 0 6px 34px;color:var(--mute)}
+.steps li:before{content:"";position:absolute;left:4px;top:12px;width:14px;height:14px;border-radius:50%;border:2px solid var(--line);background:#fff}
+.steps li:not(:last-child):after{content:"";position:absolute;left:10px;top:28px;width:2px;height:calc(100% - 14px);background:var(--line)}
+.steps li.d{color:var(--ink)}.steps li.d:before{background:var(--ink);border-color:var(--ink)}
+.steps li.c{color:var(--ink);font-weight:600}.steps li.c:before{background:var(--tag);border-color:var(--ink)}
+.steps li.x{color:var(--red);font-weight:600}.steps li.x:before{background:var(--red);border-color:var(--red)}
+.err{color:var(--red);font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+ <a class="brand" href="index.html">EASY DROP</a>
+ <div class="lg" id="lg"><button data-l="th">ไทย</button><button data-l="en">EN</button><button data-l="ko">한국어</button></div>
+</header>
+<h1 data-k="title"></h1>
+<p class="note" data-k="note"></p>
+<form class="trk" id="f"><input id="code" name="code" required maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="PR-XXXXXX" aria-label="Request number"><button data-k="go"></button></form>
+<div id="out" aria-live="polite"></div>
+<p><a href="index.html" data-k="home"></a></p>
+
+<script>
+const URL_='https://crcfuvnhxpnxbnnwjolm.supabase.co',KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNyY2Z1dm5oeHBueGJubndqb2xtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2MjIyMTMsImV4cCI6MjEwNzE5ODIxM30.VlCdA3LxHz1Xz-t-p2jxqyQmd9r1z3bOkbDP3cwg_dI';
+const $=s=>document.querySelector(s);
+const LI={th:0,en:1,ko:2};
+const D={
+ title:['ติดตามสถานะ','Track your request','진행 상황 조회'],
+ note:['กรอกหมายเลขคำขอที่ได้รับตอนส่งข้อมูล (เช่น PR-ABC234)','Enter the request number you received when you submitted (for example PR-ABC234).','접수 시 받으신 접수번호를 입력해 주세요 (예: PR-ABC234).'],
+ go:['ค้นหา','Track','조회'],
+ home:['กลับหน้าหลัก','Back to home','홈으로'],
+ nf:['ไม่พบหมายเลขนี้ กรุณาตรวจสอบอีกครั้ง','We could not find that number. Please check it and try again.','해당 번호를 찾을 수 없습니다. 다시 확인해 주세요.'],
+ err:['เชื่อมต่อไม่สำเร็จ กรุณาลองใหม่อีกครั้ง','Could not connect. Please try again.','연결하지 못했습니다. 다시 시도해 주세요.'],
+ now:['สถานะปัจจุบัน','Current status','현재 상태'],
+ sub:['ส่งคำขอเมื่อ','Submitted','접수일'],upd:['อัปเดตล่าสุด','Last updated','최종 업데이트'],
+ cancelled:['ยกเลิกแล้ว','Cancelled','취소됨'],
+ k_kr_to_th:['ส่งพัสดุจากเกาหลีไปไทย','Parcel from Korea to Thailand','한국 → 태국 소포'],
+ k_th_to_kr:['ส่งพัสดุจากไทยไปเกาหลี','Parcel from Thailand to Korea','태국 → 한국 소포'],
+ k_pickup:['รับพัสดุในเกาหลี','Parcel pick-up in Korea','한국 내 소포 수거'],
+ k_order:['สั่งซื้อกล่อง','Box order','박스 주문'],
+ s_new:['รับคำขอแล้ว','Request received','접수 완료'],
+ s_contacted:['ทีมงานติดต่อกลับแล้ว','We have contacted you','담당자 연락 완료'],
+ s_received:['รับพัสดุเข้าระบบแล้ว','Parcel received by us','소포 입고 완료'],
+ s_shipped_th:['ส่งออกไปไทยแล้ว','Shipped to Thailand','태국으로 발송됨'],
+ s_shipped_kr:['ส่งออกไปเกาหลีแล้ว','Shipped to Korea','한국으로 발송됨'],
+ s_shipped_o:['จัดส่งกล่องแล้ว','Boxes shipped','박스 발송됨'],
+ s_confirmed:['ยืนยันคำขอแล้ว','Confirmed','확정됨'],
+ s_collected:['รับพัสดุจากลูกค้าแล้ว','Parcels collected','수거 완료'],
+ s_delivered:['ส่งมอบแล้ว','Delivered','배송 완료'],
+ s_closed:['เสร็จสิ้น','Completed','완료']
+};
+const FLOW=(kind,dir)=>({
+ parcel:[['new','s_new'],['contacted','s_contacted'],['received','s_received'],['shipped',dir==='th_to_kr'?'s_shipped_kr':'s_shipped_th'],['closed','s_closed']],
+ pickup:[['new','s_new'],['confirmed','s_confirmed'],['collected','s_collected'],['closed','s_closed']],
+ order:[['new','s_new'],['confirmed','s_confirmed'],['shipped','s_shipped_o'],['delivered','s_delivered'],['closed','s_closed']]
+}[kind]);
+const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const LOC={th:'th-TH',en:'en-GB',ko:'ko-KR'};
+const dt=v=>new Date(v).toLocaleString(LOC[LANG],{dateStyle:'medium',timeStyle:'short'});
+let LANG='th',LAST=null;
+const T=k=>D[k][LI[LANG]];
+function render(){
+ const o=$('#out');
+ if(!LAST){return}
+ if(LAST==='nf'||LAST==='err'){o.innerHTML=`<p class="err">${esc(T(LAST))}</p>`;return}
+ const r=LAST,flow=FLOW(r.kind,r.direction),kk=r.kind==='parcel'?'k_'+r.direction:'k_'+r.kind;
+ const cancelled=r.status==='cancelled';
+ const idx=flow.findIndex(x=>x[0]===r.status);
+ const li=flow.map(([st,lab],i)=>`<li class="${cancelled?(i===0?'d':''):i<idx?'d':i===idx?'c':''}">${esc(T(lab))}</li>`).join('')+(cancelled?`<li class="x">${esc(T('cancelled'))}</li>`:'');
+ o.innerHTML=`<div class="res"><h2>${esc(r.code)}</h2><p class="kind">${esc(T(kk))}</p>
+ <ul class="steps">${li}</ul>
+ <p class="note">${esc(T('sub'))}: ${esc(dt(r.created_at))}<br>${esc(T('upd'))}: ${esc(dt(r.updated_at))}</p></div>`;
+}
+function setLang(l){
+ LANG=l;document.documentElement.lang=l;
+ document.querySelectorAll('[data-k]').forEach(e=>e.textContent=D[e.dataset.k][LI[l]]);
+ document.title=D.title[LI[l]];
+ document.querySelectorAll('#lg button').forEach(b=>b.classList.toggle('on',b.dataset.l===l));
+ try{localStorage.setItem('lang',l)}catch(_){}
+ render();
+}
+document.querySelectorAll('#lg button').forEach(b=>b.onclick=()=>setLang(b.dataset.l));
+let sv=null;try{sv=localStorage.getItem('lang')}catch(_){}
+setLang(LI[sv]!==undefined?sv:'th');
+
+async function look(code){
+ code=code.trim().toUpperCase();
+ if(!code)return;
+ history.replaceState(null,'','?code='+encodeURIComponent(code));
+ try{
+  const r=await fetch(URL_+'/rest/v1/rpc/track_request',{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'},body:JSON.stringify({p_code:code})});
+  if(!r.ok)throw new Error(r.status);
+  const j=await r.json();LAST=j||'nf';
+ }catch(_){LAST='err'}
+ render();
+}
+$('#f').onsubmit=e=>{e.preventDefault();look($('#code').value)};
+const q=new URLSearchParams(location.search).get('code');
+if(q){$('#code').value=q.slice(0,12);look(q)}
+</script>
+</div>
+</body>
+</html>

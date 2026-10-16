@@ -133,7 +133,8 @@ const D={
  ok:['สั่งซื้อเรียบร้อยแล้ว','Order received','주문이 접수되었습니다'],
  okn:['กรุณาเก็บหมายเลขคำสั่งซื้อนี้ไว้ ทีมงานจะติดต่อกลับทางเบอร์หรืออีเมลที่ให้ไว้','Please keep this order number. We will contact you by the phone or email you gave.','주문번호를 보관해 주세요. 입력하신 연락처나 이메일로 연락드리겠습니다.'],
  err:['ส่งไม่สำเร็จ กรุณาลองใหม่อีกครั้ง','Could not send. Please try again.','제출하지 못했습니다. 다시 시도해 주세요.'],
- home:['กลับหน้าหลัก','Back to home','홈으로']
+ home:['กลับหน้าหลัก','Back to home','홈으로'],
+ track:['ติดตามสถานะ','Track this request','진행 상황 조회']
 };
 const REG=window.KR_REGIONS||[];
 const field=(k,o={})=>`<label class="${o.w?'w':''}"><span><span data-k="${k}"></span>${o.o?'':' *'}</span><input name="${k}" ${o.type?`type="${o.type}"`:''} ${o.a||''} ${o.o?'':'required'}></label>`;
@@ -214,7 +215,7 @@ fetch(URL_+'/rest/v1/prices?select=key,amount_krw',{headers:{apikey:KEY,Authoriz
  .then(r=>r.ok?r.json():[]).then(rows=>{rows.forEach(x=>{if(x.key in PRICE)PRICE[x.key]=x.amount_krw});render()}).catch(()=>{});
 
 function done(code,total){
- $('#f').innerHTML=`<div class="ok"><h2 data-k="ok"></h2><div class="code">${code}</div><p><span data-k="total"></span>: <b>${won(total)}</b></p><p data-k="okn"></p><p><a href="index.html" data-k="home"></a></p></div>`;
+ $('#f').innerHTML=`<div class="ok"><h2 data-k="ok"></h2><div class="code">${code}</div><p><span data-k="total"></span>: <b>${won(total)}</b></p><p data-k="okn"></p><p><a href="track.html?code=${code}" data-k="track"></a></p><p><a href="index.html" data-k="home"></a></p></div>`;
  setLang(LANG);
 }
 $('#f').onsubmit=async e=>{

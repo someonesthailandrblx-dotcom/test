@@ -52,7 +52,7 @@ fieldset{border:1.5px solid var(--line);border-radius:8px;margin:0;padding:10px}
  <main>
   <div>
    <button id="new" style="width:100%;margin-bottom:12px">New booking</button>
-   <button id="par" class="alt" style="width:100%;margin-bottom:12px">Parcel requests (to Thailand)</button>
+   <button id="par" class="alt" style="width:100%;margin-bottom:12px">Parcel requests (both directions)</button>
    <button id="pu" class="alt" style="width:100%;margin-bottom:12px">Pickup requests (in Korea)</button>
    <button id="bo" class="alt" style="width:100%;margin-bottom:12px">Box orders</button>
    <button id="pr" class="alt" style="width:100%;margin-bottom:12px">Prices</button>
@@ -215,17 +215,22 @@ document.addEventListener('change',e=>{
 });
 
 let PR=[];
+const DIRL={kr_to_th:'Korea → Thailand',th_to_kr:'Thailand → Korea'};
+const krAddr=p=>[p.zip,p.prov,p.city,p.street,p.bno,p.place,p.dong,p.ho].filter(Boolean).join(' ');
+const thAddr=p=>`${p.addr||''}, ${p.prov||''} ${p.zip||''}`;
 $('#par').onclick=async()=>{
  PR=ok(await sb.from('parcel_requests').select('*').order('created_at',{ascending:false}).limit(100));
- $('#detail').innerHTML='<div class="card"><h2>Parcel requests</h2>'+(PR.map(x=>`<button class="item" data-pr="${x.id}"><b>${esc(x.code)}</b> <span class="pill">${esc(x.status)}</span><small>${esc(x.sender.fn)} ${esc(x.sender.ln)} → ${esc(x.recipient.fn)} ${esc(x.recipient.ln)} · ${dt(x.created_at)}</small></button>`).join('')||'<p>None yet.</p>')+'</div>';
+ $('#detail').innerHTML='<div class="card"><h2>Parcel requests</h2>'+(PR.map(x=>`<button class="item" data-pr="${x.id}"><b>${esc(x.code)}</b> <span class="pill">${esc(x.status)}</span><small>${esc(DIRL[x.direction]||x.direction)} · ${esc(x.sender.fn)} ${esc(x.sender.ln)} → ${esc(x.recipient.fn)} ${esc(x.recipient.ln)} · ${dt(x.created_at)}</small></button>`).join('')||'<p>None yet.</p>')+'</div>';
 };
 function showPR(id){
- const x=PR.find(r=>r.id===id),s=x.sender,r=x.recipient,c=x.customs;
+ const x=PR.find(r=>r.id===id),s=x.sender,r=x.recipient,c=x.customs,toKr=x.direction==='th_to_kr';
  $('#detail').innerHTML=`<div class="card"><h2>${esc(x.code)} <span class="pill">${esc(x.status)}</span></h2>
- <p><b>Sender (Korea)</b><br>${esc(s.fn)} ${esc(s.ln)} · ${esc(s.phone)} · ${esc(s.email)}<br>${esc([s.zip,s.prov,s.city,s.street,s.bno,s.place,s.dong,s.ho].filter(Boolean).join(' '))}</p>
- <p><b>Recipient (Thailand)</b><br>${esc(r.fn)} ${esc(r.ln)} · ${esc(r.phone)} · ${esc(r.email)}<br>${esc(r.addr)}, ${esc(r.prov)} ${esc(r.zip)}</p>
+ <p><small>${esc(DIRL[x.direction]||x.direction)}</small></p>
+ <p><b>Sender (${toKr?'Thailand':'Korea'})</b><br>${esc(s.fn)} ${esc(s.ln)} · ${esc(s.phone)} · ${esc(s.email)}<br>${esc(toKr?thAddr(s):krAddr(s))}</p>
+ <p><b>Recipient (${toKr?'Korea':'Thailand'})</b><br>${esc(r.fn)} ${esc(r.ln)} · ${esc(r.phone)} · ${esc(r.email)}<br>${esc(toKr?krAddr(r):thAddr(r))}</p>
  <p><b>Customs declaration</b><br>${esc(c.contents)} × ${esc(c.qty)} · ${esc(c.value)} ${esc(c.cur)}</p>
  <p><small>Customer language: ${esc(x.language)} · Terms ${esc(x.consent_version)} accepted ${dt(x.consent_at)}</small></p>
+ <p><small>Customers can follow this status at track.html using the code ${esc(x.code)}.</small></p>
  <select id="prst">${['new','contacted','received','shipped','closed'].map(v=>`<option ${v===x.status?'selected':''}>${v}</option>`).join('')}</select></div>`;
  $('#prst').onchange=async e=>{ok(await sb.from('parcel_requests').update({status:e.target.value}).eq('id',id));$('#par').click()};
 }
