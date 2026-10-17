@@ -3,17 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>EASY DROP – บริการรับฝากสัมภาระในเกาหลี</title>
-<meta name="description" content="รับฝากสัมภาระปลอดภัยในเกาหลี พร้อมบริการรับถึงที่พักและส่งสนามบิน ราคาประหยัด">
+<title>EASY DROP – ฝากกระเป๋า ส่งพัสดุ เกาหลี–ไทย</title>
+<meta name="description" content="รับฝากสัมภาระในเกาหลี ส่งพัสดุได้ทั้งเกาหลี–ไทยและไทย–เกาหลี สั่งซื้อกล่อง และติดตามสถานะออนไลน์">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;700&family=Sarabun:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;700&family=Sarabun:wght@400;600&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{--ink:#13233A;--paper:#EEF3F7;--tag:#FFC53D;--red:#D6403A;--mute:#51627A;--line:#C9D5E0}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.7 Sarabun,sans-serif}
-h1,h2,h3,.brand,.btn{font-family:Prompt,Sarabun,sans-serif}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.7 Sarabun,"Noto Sans KR",sans-serif}
+h1,h2,h3,.brand,.btn{font-family:Prompt,"Noto Sans KR",sans-serif}
 h1,h2,h3{line-height:1.3;margin:0}
 a{color:inherit}
 :focus-visible{outline:3px solid var(--red);outline-offset:2px}
@@ -25,26 +25,28 @@ nav a{text-decoration:none}
 .lang{border:1.5px solid var(--ink);background:none;border-radius:999px;padding:2px 14px;font:600 14px Sarabun;cursor:pointer;color:var(--ink)}
 .btn{display:inline-block;background:var(--ink);color:#fff;padding:12px 26px;border-radius:8px;font-weight:500;font-size:16px;text-decoration:none;border:1.5px solid var(--ink);cursor:pointer}
 .btn.alt{background:none;color:var(--ink)}
-.hero{display:grid;grid-template-columns:1.2fr .8fr;gap:40px;align-items:center;padding:48px 0 72px}
-h1{font-size:clamp(34px,5.4vw,56px);font-weight:700}
+.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:44px;align-items:center;padding:40px 0 72px}
+h1{font-size:clamp(32px,5vw,52px);font-weight:700}
 .hero p{max-width:32em;color:var(--mute);font-size:19px}
 .cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
-.svc{margin:18px 0 0;font-size:16px;color:var(--mute)}
-.svc a{margin-left:16px}
-.trk{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:14px 0 0;font-size:16px;color:var(--mute)}
-.trk input{width:150px;padding:6px 10px;border:1.5px solid var(--ink);border-radius:8px;font:600 15px inherit;text-transform:uppercase;background:#fff;color:var(--ink)}
-.trk button{background:var(--ink);color:#fff;border:0;border-radius:8px;padding:7px 16px;font:inherit;cursor:pointer}
-.tagwrap{justify-self:center;transform-origin:50% 0;animation:swing 1.8s ease-out 1}
-.string{width:2px;height:44px;background:var(--ink);margin:0 auto}
-.tag{width:264px;background:var(--tag);border-radius:10px 10px 18px 18px;padding:46px 24px 24px;position:relative}
-.tag:before{content:"";position:absolute;top:14px;left:50%;width:18px;height:18px;margin-left:-9px;border-radius:50%;background:var(--paper);box-shadow:inset 0 0 0 2px var(--ink)}
-.tag b{font:700 15px Prompt}
-.tag .code{font:700 40px/1.1 Prompt;margin:6px 0 14px}
-.tag dl{margin:0;border-top:2px dashed var(--ink);padding-top:12px;font-size:15px;line-height:1.6}
-.tag dt{color:#5b4300;font-size:13px}
-.tag dd{margin:0 0 8px;font-weight:600}
-@keyframes swing{0%{rotate:-7deg}30%{rotate:5deg}60%{rotate:-2deg}100%{rotate:0deg}}
-@media (prefers-reduced-motion:reduce){.tagwrap{animation:none}html{scroll-behavior:auto}}
+.trk{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:26px 0 0;font-size:16px;color:var(--mute);max-width:none}
+.trk input{width:176px;padding:9px 12px;border:1.5px solid var(--ink);border-radius:8px;font:600 16px Prompt;letter-spacing:.04em;text-transform:uppercase;background:#fff;color:var(--ink)}
+.trk button{background:var(--ink);color:#fff;border:0;border-radius:8px;padding:10px 18px;font:500 16px Prompt,"Noto Sans KR",sans-serif;cursor:pointer}
+.route{background:var(--ink);border-radius:22px;overflow:hidden;line-height:0;max-width:470px;justify-self:center;width:100%}
+.route svg{width:100%;height:auto;display:block}
+.route text{font-family:Prompt,"Noto Sans KR",sans-serif}
+.tagsw{transform-origin:120px 300px;animation:land 1.9s ease-out 4s both}
+@keyframes land{0%{opacity:0;rotate:-10deg}6%{opacity:1;rotate:-10deg}32%{rotate:6deg}62%{rotate:-2.5deg}100%{opacity:1;rotate:0deg}}
+@media (prefers-reduced-motion:reduce){.tagsw{animation:none}html{scroll-behavior:auto}}
+.board{border-top:2px solid var(--ink)}
+.bd{display:grid;grid-template-columns:190px 1fr 22px;gap:22px;align-items:center;padding:20px 10px;border-bottom:1px solid var(--line);text-decoration:none;transition:background .15s}
+.bd:hover{background:#fff}
+.bd:after{content:"";width:10px;height:10px;border-top:2px solid var(--ink);border-right:2px solid var(--ink);rotate:45deg;justify-self:end;transition:translate .15s}
+.bd:hover:after{translate:4px 0}
+.chip{justify-self:start;background:var(--tag);font:600 15px Prompt,"Noto Sans KR",sans-serif;padding:3px 16px 3px 20px;border-radius:4px 14px 14px 4px;position:relative}
+.chip:before{content:"";position:absolute;left:7px;top:50%;width:6px;height:6px;margin-top:-3px;border-radius:50%;background:var(--paper);box-shadow:inset 0 0 0 1.5px var(--ink)}
+.bt b{display:block;font:500 20px/1.35 Prompt,"Noto Sans KR",sans-serif}
+.bt small{display:block;color:var(--mute);font-size:15px;line-height:1.5}
 section{padding:64px 0;border-top:1px solid var(--line)}
 h2{font-size:30px;margin-bottom:8px}
 .lead{color:var(--mute);margin:0 0 32px;max-width:36em}
@@ -74,6 +76,9 @@ footer{border-top:1px solid var(--line);padding:28px 0 40px;font-size:15px;color
  nav a{display:none}
  .hero,.steps,.branches,form{grid-template-columns:1fr}
  .hero{padding-top:24px}
+ nav a.keep{display:inline}
+ .bd{grid-template-columns:1fr 18px;gap:6px 14px}
+ .bd .chip{grid-column:1/-1}
 }
 </style>
 </head>
@@ -82,13 +87,12 @@ footer{border-top:1px solid var(--line);padding:28px 0 40px;font-size:15px;color
 <header>
  <a class="brand" href="#">EASY DROP</a>
  <nav>
+  <a href="#services" data-en="Services" data-ko="서비스">บริการ</a>
   <a href="#how" data-en="How it works" data-ko="이용 방법">ขั้นตอน</a>
   <a href="#prices" data-en="Prices" data-ko="요금">ราคา</a>
   <a href="#branches" data-en="Branches" data-ko="지점">สาขา</a>
   <a href="#faq" data-en="FAQ" data-ko="자주 묻는 질문">คำถามที่พบบ่อย</a>
-  <a href="send.html" data-en="Send parcel" data-ko="소포 보내기">ส่งพัสดุ</a>
-  <a href="pickup.html" data-en="Pick-up" data-ko="수거 신청">รับพัสดุ</a>
-  <a href="order.html" data-en="Order boxes" data-ko="박스 주문">สั่งซื้อกล่อง</a>
+  <a class="keep" href="track.html" data-en="Track" data-ko="조회">ติดตามสถานะ</a>
   <button class="lang" id="lang" type="button" aria-label="Switch language">EN</button>
  </nav>
 </header>
@@ -96,31 +100,65 @@ footer{border-top:1px solid var(--line);padding:28px 0 40px;font-size:15px;color
 <main>
 <div class="hero">
  <div>
-  <h1 data-en="Store your bags in Korea. Travel hands-free." data-ko="한국에서 짐은 맡기고, 가볍게 여행하세요.">ฝากกระเป๋าในเกาหลี เที่ยวได้เต็มที่</h1>
-  <p data-en="Safe luggage storage with hotel pickup and airport delivery, at fair prices." data-ko="숙소 방문 수거와 공항 배송까지, 합리적인 가격으로 안전하게 보관해 드립니다.">รับฝากสัมภาระปลอดภัย พร้อมบริการรับถึงที่พักและส่งสนามบิน ในราคาประหยัด</p>
+  <h1 data-en="Bags, boxes and parcels between Korea and Thailand." data-ko="한국과 태국 사이, 짐과 소포를 맡기고 보내세요.">ฝากกระเป๋า ส่งพัสดุ ระหว่างเกาหลีกับไทย</h1>
+  <p data-en="Store luggage in Korea, ship parcels in both directions, and follow every request with its own number." data-ko="한국에서 짐을 보관하고, 소포를 양방향으로 보내고, 모든 신청을 접수번호로 확인하세요.">รับฝากสัมภาระในเกาหลี ส่งพัสดุได้ทั้งสองทาง และติดตามสถานะทุกคำขอด้วยหมายเลขของคุณเอง</p>
   <div class="cta">
-   <a class="btn" href="#book" data-en="Book now" data-ko="지금 예약하기">จองเลย</a>
+   <a class="btn" href="#services" data-en="Choose a service" data-ko="서비스 선택">เลือกบริการ</a>
    <a class="btn alt" href="#prices" data-en="See prices" data-ko="요금 보기">ดูราคา</a>
   </div>
-  <p class="svc"><span data-en="Parcel services:" data-ko="소포 서비스:">บริการพัสดุ:</span><a href="send.html" data-en="Send to Thailand" data-ko="태국으로 보내기">ส่งกลับไทย</a><a href="pickup.html" data-en="Pick-up in Korea" data-ko="한국 내 수거">รับพัสดุในเกาหลี</a><a href="send-kr.html" data-en="Send to Korea" data-ko="한국으로 보내기">ส่งไปเกาหลี</a><a href="order.html" data-en="Order boxes" data-ko="박스 주문">สั่งซื้อกล่อง</a></p>
-  <form class="trk" action="track.html" method="get"><span data-en="Track a parcel:" data-ko="소포 조회:">ติดตามพัสดุ:</span><input name="code" placeholder="PR-XXXXXX" maxlength="12" required aria-label="Request number"><button data-en="Track" data-ko="조회">ค้นหา</button></form>
+  <form class="trk" action="track.html" method="get"><span data-en="Track a request:" data-ko="진행 상황 조회:">ติดตามสถานะ:</span><input name="code" placeholder="PR-XXXXXX" maxlength="12" required autocapitalize="characters" autocomplete="off" aria-label="Request number"><button data-en="Track" data-ko="조회">ค้นหา</button></form>
  </div>
- <div class="tagwrap" aria-hidden="true">
-  <div class="string"></div>
-  <div class="tag">
-   <b>EASY DROP</b>
-   <div class="code">ED-2310</div>
-   <dl>
-    <dt data-en="Drop-off" data-ko="맡기는 시간">ฝาก</dt><dd>10:00</dd>
-    <dt data-en="Pick-up" data-ko="찾는 시간">รับคืน</dt><dd>20:00</dd>
-    <dt data-en="Bags" data-ko="수량">จำนวน</dt><dd data-en="2 bags" data-ko="2개">2 ใบ</dd>
-   </dl>
-  </div>
+ <div class="route" aria-hidden="true">
+  <svg id="routesvg" viewBox="0 0 400 420" xmlns="http://www.w3.org/2000/svg">
+   <defs><pattern id="dots" width="22" height="22" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.2" fill="#fff" fill-opacity=".09"/></pattern></defs>
+   <rect width="400" height="420" fill="#13233A"/><rect width="400" height="420" fill="url(#dots)"/>
+   <path id="route" d="M300 112 Q352 300 120 292" fill="none" stroke="#fff" stroke-opacity=".3" stroke-width="2" stroke-dasharray="2 8" stroke-linecap="round"/>
+   <path d="M300 112 Q352 300 120 292" pathLength="1" fill="none" stroke="#FFC53D" stroke-width="3" stroke-dasharray="1" stroke-dashoffset="1">
+    <animate attributeName="stroke-dashoffset" from="1" to="0" begin="0.6s" dur="3.4s" fill="freeze"/>
+   </path>
+   <circle cx="300" cy="112" r="11" fill="#D6403A" fill-opacity=".35"/><circle cx="300" cy="112" r="5.5" fill="#D6403A" stroke="#fff" stroke-width="2"/>
+   <text x="284" y="104" text-anchor="end" fill="#fff" font-size="22" font-weight="700" data-en="Seoul" data-ko="서울">โซล</text>
+   <text x="284" y="124" text-anchor="end" fill="#FFC53D" font-size="13" font-weight="500">ICN</text>
+   <circle cx="120" cy="292" r="5.5" fill="#D6403A" stroke="#fff" stroke-width="2"/>
+   <g class="tagsw">
+    <line x1="120" y1="298" x2="120" y2="316" stroke="#fff" stroke-width="2"/>
+    <path d="M62 330 a14 14 0 0 1 14 -14 h88 a14 14 0 0 1 14 14 v50 a14 14 0 0 1 -14 14 h-88 a14 14 0 0 1 -14 -14z" fill="#FFC53D"/>
+    <circle cx="120" cy="328" r="5" fill="#13233A"/>
+    <text x="120" y="356" text-anchor="middle" fill="#13233A" font-size="12" font-weight="500" data-en="Bangkok" data-ko="방콕">กรุงเทพฯ</text>
+    <text x="120" y="381" text-anchor="middle" fill="#13233A" font-size="26" font-weight="700">BKK</text>
+   </g>
+   <g opacity="0">
+    <animateMotion dur="3.4s" begin="0.6s" rotate="auto" fill="freeze" calcMode="linear"><mpath href="#route"/></animateMotion>
+    <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.04;.93;1" dur="3.4s" begin="0.6s" fill="freeze"/>
+    <path d="M18 0 C11-2.5-11-2.5-15 0 C-11 2.5 11 2.5 18 0Z M5 0 L-6-17 L-11-17 L-5 0 L-11 17 L-6 17Z M-11 0 L-16-7 L-19-7 L-15 0 L-19 7 L-16 7Z" fill="#fff" stroke="#13233A" stroke-width=".8" stroke-linejoin="round"/>
+   </g>
+   <text x="270" y="226" text-anchor="end" fill="#FFC53D" font-size="14" font-weight="500" opacity="0">KR → TH<animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.12;.85;1" dur="3.4s" begin="0.6s" fill="freeze"/></text>
+   <text x="270" y="226" text-anchor="end" fill="#FFC53D" font-size="14" font-weight="500" opacity="0">TH → KR<animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.12;.85;1" dur="3.2s" begin="6.4s" fill="freeze"/></text>
+   <text x="270" y="226" text-anchor="end" fill="#fff" fill-opacity=".75" font-size="14" font-weight="500" opacity="0">KR ⇄ TH<animate attributeName="opacity" from="0" to="1" dur=".8s" begin="9.7s" fill="freeze"/></text>
+   <g opacity="0">
+    <animateMotion dur="3.2s" begin="6.4s" rotate="auto-reverse" keyPoints="1;0" keyTimes="0;1" calcMode="linear" fill="freeze"><mpath href="#route"/></animateMotion>
+    <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.04;.93;1" dur="3.2s" begin="6.4s" fill="freeze"/>
+    <path d="M18 0 C11-2.5-11-2.5-15 0 C-11 2.5 11 2.5 18 0Z M5 0 L-6-17 L-11-17 L-5 0 L-11 17 L-6 17Z M-11 0 L-16-7 L-19-7 L-15 0 L-19 7 L-16 7Z" fill="#fff" stroke="#13233A" stroke-width=".8" stroke-linejoin="round"/>
+   </g>
+  </svg>
  </div>
 </div>
 
+<section id="services">
+ <h2 data-en="Choose a service" data-ko="서비스 선택">เลือกบริการ</h2>
+ <p class="lead" data-en="Every request gets a number you can track." data-ko="모든 신청에는 조회할 수 있는 접수번호가 부여됩니다.">ทุกคำขอจะได้หมายเลขสำหรับติดตามสถานะ</p>
+ <div class="board">
+  <a class="bd" href="send.html"><span class="chip" data-en="Korea → Thailand" data-ko="한국 → 태국">เกาหลี → ไทย</span><span class="bt"><b data-en="Send a parcel to Thailand" data-ko="태국으로 소포 보내기">ส่งพัสดุกลับไทย</b><small data-en="Fill in sender, recipient and customs details online." data-ko="발송자, 수취인, 세관신고 정보를 온라인으로 입력하세요.">กรอกข้อมูลผู้ส่ง ผู้รับ และใบสำแดงสินค้าออนไลน์</small></span></a>
+  <a class="bd" href="send-kr.html"><span class="chip" data-en="Thailand → Korea" data-ko="태국 → 한국">ไทย → เกาหลี</span><span class="bt"><b data-en="Send a parcel to Korea" data-ko="한국으로 소포 보내기">ส่งพัสดุไปเกาหลี</b><small data-en="Ship from Thailand to an address in Korea, with the customs declaration." data-ko="태국에서 한국 주소로 발송하고 세관신고서도 함께 작성합니다.">ส่งจากไทยไปยังที่อยู่ในเกาหลี พร้อมใบสำแดงสินค้า</small></span></a>
+  <a class="bd" href="pickup.html"><span class="chip" data-en="In Korea" data-ko="한국 내">ในเกาหลี</span><span class="bt"><b data-en="Parcel pick-up" data-ko="소포 수거 신청">ให้เราไปรับพัสดุ</b><small data-en="We collect your boxes from your address, up to 10 per visit." data-ko="원하시는 주소로 방문해 박스를 수거합니다. 1회 최대 10박스.">เรามารับกล่องถึงที่อยู่ของคุณ สูงสุด 10 กล่องต่อครั้ง</small></span></a>
+  <a class="bd" href="order.html"><span class="chip" data-en="In Korea" data-ko="한국 내">ในเกาหลี</span><span class="bt"><b data-en="Order boxes and tape" data-ko="박스·테이프 주문">สั่งซื้อกล่องและเทป</b><small data-en="Boxes no. 4, 5 and 6 plus tape, delivered to an address in Korea." data-ko="4·5·6호 박스와 테이프를 한국 내 주소로 배송합니다.">กล่องเบอร์ 4, 5, 6 และเทป ส่งถึงที่อยู่ในเกาหลี</small></span></a>
+  <a class="bd" href="#book"><span class="chip" data-en="In Korea" data-ko="한국 내">ในเกาหลี</span><span class="bt"><b data-en="Store your bags" data-ko="짐 보관">ฝากกระเป๋า</b><small data-en="Leave them at a branch, or have us collect from your hotel or deliver to the airport." data-ko="지점 보관, 숙소 방문 수거, 공항 배송 중에서 선택하세요.">ฝากที่สาขา ให้เรารับถึงที่พัก หรือส่งสนามบิน</small></span></a>
+  <a class="bd" href="track.html"><span class="chip" data-en="Any request" data-ko="모든 신청">ทุกคำขอ</span><span class="bt"><b data-en="Track a request" data-ko="진행 상황 조회">ติดตามสถานะ</b><small data-en="Enter your request number to see which step it has reached." data-ko="접수번호를 입력하면 현재 진행 단계를 확인할 수 있습니다.">กรอกหมายเลขคำขอเพื่อดูว่าตอนนี้อยู่ขั้นตอนไหน</small></span></a>
+ </div>
+</section>
+
 <section id="how">
- <h2 data-en="How it works" data-ko="이용 방법">ใช้งานง่าย 3 ขั้นตอน</h2>
+ <h2 data-en="Storing bags in 3 steps" data-ko="짐 보관 3단계">ฝากกระเป๋า 3 ขั้นตอน</h2>
  <p class="lead" data-en="From booking to pick-up, you always have a booking code to show." data-ko="예약부터 찾을 때까지 예약번호 하나면 충분합니다.">ตั้งแต่จองจนรับคืน คุณจะมีรหัสการจองไว้แสดงทุกครั้ง</p>
  <ol class="steps">
   <li><h3 data-en="Book" data-ko="예약">จอง</h3><p data-en="Choose the date, time and number of bags." data-ko="날짜, 시간, 짐 개수를 선택하세요.">เลือกวัน เวลา และจำนวนกระเป๋า</p></li>
@@ -130,7 +168,7 @@ footer{border-top:1px solid var(--line);padding:28px 0 40px;font-size:15px;color
 </section>
 
 <section id="prices">
- <h2 data-en="Prices" data-ko="요금">ราคาบริการ</h2>
+ <h2 data-en="Bag storage prices" data-ko="짐 보관 요금">ราคาฝากกระเป๋า</h2>
  <p class="lead" data-en="Per bag. Larger bags may cost more." data-ko="짐 1개 기준입니다. 큰 짐은 추가 요금이 있을 수 있습니다.">คิดต่อใบ กระเป๋าขนาดใหญ่อาจมีค่าบริการเพิ่ม</p>
  <!-- TODO: replace placeholder prices with the client's real rates -->
  <div class="row"><div><h3 data-en="Store at a branch" data-ko="지점 보관">ฝากที่สาขา</h3><p data-en="Per bag, per day" data-ko="1개당 1일">ต่อใบ ต่อวัน</p></div><div class="price">₩0,000</div></div>
@@ -149,7 +187,7 @@ footer{border-top:1px solid var(--line);padding:28px 0 40px;font-size:15px;color
 </section>
 
 <section id="book">
- <h2 data-en="Book your bags" data-ko="짐 맡기기 예약">จองฝากกระเป๋า</h2>
+ <h2 data-en="Book bag storage" data-ko="짐 보관 예약">จองบริการฝากกระเป๋า</h2>
  <p class="lead" data-en="Send the form and we will confirm by message." data-ko="신청서를 보내 주시면 메시지로 확인해 드립니다.">ส่งแบบฟอร์ม แล้วเราจะยืนยันกลับทางข้อความ</p>
  <form id="f">
   <label><span data-en="Name" data-ko="이름">ชื่อ</span><input name="name" required></label>
@@ -169,6 +207,7 @@ footer{border-top:1px solid var(--line);padding:28px 0 40px;font-size:15px;color
 <section id="faq">
  <h2 data-en="FAQ" data-ko="자주 묻는 질문">คำถามที่พบบ่อย</h2>
  <!-- TODO: confirm every answer with the client -->
+ <details><summary data-en="How do I track a parcel?" data-ko="소포는 어떻게 조회하나요?">ติดตามพัสดุได้อย่างไร</summary><p data-en="After you submit a form you get a request number. Enter it on the tracking page at any time." data-ko="신청서를 제출하면 접수번호가 발급됩니다. 조회 페이지에 입력하면 언제든 확인할 수 있습니다.">หลังส่งแบบฟอร์ม คุณจะได้หมายเลขคำขอ นำไปกรอกที่หน้าติดตามสถานะได้ทุกเมื่อ</p></details>
  <details><summary data-en="What can't I store?" data-ko="맡길 수 없는 물품은 무엇인가요?">อะไรที่ฝากไม่ได้บ้าง</summary><p data-en="Valuables, cash, perishable food and prohibited items cannot be stored." data-ko="귀중품, 현금, 부패하기 쉬운 음식, 금지 물품은 보관할 수 없습니다.">ของมีค่า เงินสด อาหารสด และสิ่งของต้องห้ามไม่สามารถฝากได้</p></details>
  <details><summary data-en="What if I'm late for pick-up?" data-ko="찾는 시간에 늦으면 어떻게 되나요?">ถ้ามารับช้ากว่ากำหนดล่ะ</summary><p data-en="Please message us. Extra days are charged at the daily rate." data-ko="메시지로 알려 주세요. 초과 일수는 1일 요금으로 계산됩니다.">แจ้งเราได้ทางข้อความ วันที่เกินจะคิดตามอัตรารายวัน</p></details>
  <details><summary data-en="Are my bags insured?" data-ko="짐에 보험이 적용되나요?">กระเป๋ามีประกันไหม</summary><p data-en="Each booking has a liability limit. See the terms for details." data-ko="예약마다 배상 한도가 있습니다. 자세한 내용은 이용약관을 확인하세요.">ทุกการจองมีวงเงินความรับผิดชอบ ดูรายละเอียดในเงื่อนไขการใช้บริการ</p></details>
@@ -178,6 +217,7 @@ footer{border-top:1px solid var(--line);padding:28px 0 40px;font-size:15px;color
 
 <footer>
  <div>EASY DROP · <span data-en="Contact us on LINE: @yourid" data-ko="LINE으로 문의하세요: @yourid">ติดต่อเราทาง LINE: @yourid</span></div>
+ <div><a href="send.html" data-en="Send to Thailand" data-ko="태국으로 보내기">ส่งกลับไทย</a> · <a href="send-kr.html" data-en="Send to Korea" data-ko="한국으로 보내기">ส่งไปเกาหลี</a> · <a href="pickup.html" data-en="Pick-up" data-ko="수거 신청">รับพัสดุ</a> · <a href="order.html" data-en="Order boxes" data-ko="박스 주문">สั่งซื้อกล่อง</a> · <a href="track.html" data-en="Track" data-ko="조회">ติดตามสถานะ</a></div>
  <div><a href="legal.html" data-en="Terms and privacy policy" data-ko="이용약관 및 개인정보 처리방침">ข้อกำหนดและนโยบายความเป็นส่วนตัว</a></div>
  <div>© 2026</div>
 </footer>
@@ -195,6 +235,7 @@ function setLang(l){
 document.getElementById('lang').onclick=()=>setLang(LN[(LN.indexOf(document.documentElement.lang)+1)%3]);
 let sv=null;try{sv=localStorage.getItem('lang')}catch(_){}
 if(LN.includes(sv)&&sv!=='th')setLang(sv);
+try{if(matchMedia('(prefers-reduced-motion: reduce)').matches){const v=document.getElementById('routesvg');v.pauseAnimations();v.setCurrentTime(20)}}catch(_){}
 document.getElementById('f').onsubmit=e=>{
  e.preventDefault();
  const body=[...new FormData(e.target)].map(([k,v])=>k+': '+v).join('\n');
